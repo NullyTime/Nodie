@@ -198,7 +198,6 @@ section.faq {
   line-height: 1.45;
   position: relative;
   overflow: hidden;
-  max-height: 250px;
   will-change: max-height;
   contain: layout;
   display: inline-block;
@@ -322,8 +321,22 @@ ul {
 
 
 
-
+/*auto Font button*/
 #autoFont {
+  border-radius: 15px;
+  border: 1px solid;
+  border-color: #5C6AC4;
+  word-wrap: break-word;
+  background-color: #1d2450;
+  color: #ffffff;
+}
+
+/* Add a background color on hover */
+#autoFont:hover {
+  background-color: #9da6dc;
+}
+
+#customNameButton {
   border-radius: 15px;
   border: 1px solid;
   border-color: #5C6AC4;
@@ -332,12 +345,10 @@ ul {
   color: #ffffff;
   padding: 4px;
 }
-
-
-/* Add a background color on hover */
-#autoFont:hover {
+#customNameButton:hover {
   background-color: #9da6dc;
 }
+
 
 
 
@@ -354,5 +365,50 @@ ul {
 
 /* Add a background color on hover */
 #lineCostButton:hover {
+  background-color: #9da6dc;
+}
+
+
+/*Select list*/
+#node_names {
+  display: inline-block;
+  width: 45px;
+  height: 34px;
+  line-height: 30px;
+  position: relative;
+  background-color: #5c6ac4;
+  border-radius: 5px;
+  border-color: #5c6ac4;
+  text-align: center;
+}
+#node_names:checked ~ .bg
+{
+  content: ">";
+  display: inline-block;
+  background: white;
+  position: absolute;
+  right: -5px;
+  top: 2px;
+  z-index: 2;
+  width: 30px;
+  height: 26px;
+  text-align: center;
+  line-height: 26px;
+  border: 2px solid #ddd;
+  transform: rotate(90deg);
+  cursor: pointer;
+}
+
+
+
+#defaultButton {
+  border-radius: 15px;
+  border: 1px solid;
+  border-color: #5C6AC4;
+  background-color: #1d2450;
+  color: #ffffff;
+  padding: 2px;
+}
+#defaultButton:hover {
   background-color: #9da6dc;
 }

@@ -10,10 +10,19 @@ function changeDraggable(change) {
         var node = document.getElementById(key);
         $(node).draggable(change);
     }
+
+    // make paint panel the closest to viewer
+    var zIndex = parseInt(document.getElementById("paint")["style"]["z-index"]);
+    if (change == "disable") {
+        document.getElementById("paint")["style"]["z-index"] = zIndex+9999;
+    } else {
+        document.getElementById("paint")["style"]["z-index"] = zIndex-9999;
+    }
 }
 
 function switchFunction() {
 	if (EDITOR_MODE == 1) nodeCreationMode(true);
+    else if (EDITOR_MODE == 2) changeDraggable("enable");
 }
 
 function NodeMode() {
@@ -40,9 +49,12 @@ function LineMode() {
         LinesHandler(true);
 		return;
 	}
+    // clear other functions
+    switchFunction();
+
+    // make every node not changable 
     changeDraggable("disable");
     LinesHandler();
-	switchFunction();
 	returnButtonsBack();
 	EDITOR_MODE = 2;
 	var button = document.getElementById("button2");

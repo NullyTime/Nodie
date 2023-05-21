@@ -7,11 +7,13 @@
       <script type="text/javascript" src="./libs/jquery-3.6.4.min.js"></script>
       <script type="text/javascript" src="./libs/jquery-ui.min.js"></script>
       <script src="./libs/FileSaver.js"></script>
-      <script src="nodes.js"></script>
-      <script src="lines.js"></script> 
-      <script src="ui.js"></script>
-      <script src="tasks.js"></script>
-      <script src="save.js"></script>
+
+      <script type="text/javascript" src="defaults.js"></script>
+      <script type="text/javascript" src="nodes.js"></script>
+      <script type="text/javascript" src="lines.js"></script> 
+      <script type="text/javascript" src="ui.js"></script>
+      <script type="text/javascript" src="tasks.js"></script>
+      <script type="text/javascript" src="save.js"></script>
    </head>
    <body id="globalMouse">
       <div class="sidenav">
@@ -38,14 +40,24 @@
 			      	<br>
 			      	Diameter:
 			      	<input id="circleSize" type="number" size="3" min="10" value=40 oninput="changeInputLength('circleSize')">
+			      	<input type="button" id="defaultButton" value="Default" onclick="setDefaultValue('circleSize');">
+			      	
 			      	<br>
+
 			      	Border Size:
 			      	<input id="borderSize" type="number" size="3" min="1" max="20" value=1 oninput="changeInputLength('borderSize')">
+			      	<input type="button" id="defaultButton" value="Default" onclick="setDefaultValue('borderSize');">
+			      	
 			      	<br>
+
 			      	Font Size:
-			      	<input id="fontSize" type="number" size="3" min="1" max="20" value=2 oninput="changeInputLength('nameSize')">
+			      	<input id="fontSize" type="number" size="3" min="1" max="20" value=2 oninput="changeInputLength('fontSize')">
+			      	<input type="button" id="defaultButton" value="Default" onclick="setDefaultValue('fontSize');">
+			      	<br>
 			      	<br>
 			      	<input type="button" id="autoFont" value="Auto Font Size Mode" onclick="autoFontGenerator();"> 
+			      	<br>
+			      	<input type="button" id="customNameButton" value="Custom Name" onclick=""> 
 			      	<br>
 			      	<br>
 			      	Node Color:
@@ -56,6 +68,7 @@
 			      	<br>
 			      	Border Color:
 			      	<input type="color" id="borderColor" value="#f6b73c">
+			      	<br>
 			      </p>
 			    </li>
 			    <li>
@@ -96,10 +109,15 @@
 			      <i></i>
 			      <h2>Save</h2>
 			      <p>
-					<button type="button" onclick="saveState()" style=".button">Save as</button>
-					<button type="button" onclick="saveStateCookie()" style=".button">Save in cookie</button>
-					<button type="button" onclick="loadState()" style=".button">Load from file</button>
-					<button type="button" onclick="loadStateCookie()" style=".button">Load from cookies</button>
+			      	Cookies
+			      	<br>
+			      	<button type="button" onclick="saveStateCookie()" style=".button">Save</button>
+			      	<button type="button" onclick="loadStateCookie()" style=".button">Load</button>
+			      	<br><br>
+			      	In File
+			      	<br>
+					<button type="button" onclick="saveState()" style=".button">Save</button>
+					<button type="button" onclick="loadState()" style=".button">Load</button>
 			      </p>
 			    </li>
 			  </ul>

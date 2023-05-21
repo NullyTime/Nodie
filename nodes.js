@@ -1,24 +1,22 @@
-/*
-    TODO sl;dr
-        - make letter more "in the middle"
-        - save as text and load text
-        - ability to delete lines 
-        - table with all nodes in there
-        - ability to input data by a table
-        - page-version of a console
-        - window with credits
-        - more names for nodes
-        - optimize code and delete useless outputs
-        - delete line duplicates if it was intentionally connected >1 times
-*/
-
 const defaultCircleOutlineColor = '#000000';
 
+// To make nodes on a different levels
+var globalZInndex = 19;
 
 var NODES_Storage = {};
 
 
-function nodeCreationMode(toTerminate) {
+
+
+
+
+
+
+
+
+
+function nodeCreationMode(toTerminate, preBuilt) {
+	// to switch mode
 	if (toTerminate) {
 		$("#globalMouse").unbind("mousemove");
 		$("#globalMouse").unbind("mousedown");
@@ -26,10 +24,16 @@ function nodeCreationMode(toTerminate) {
 		delete ctx;
 		return;
 	}
-	// var canvas;
-	// if (canvas != undefined) 
+
 	var canvas = document.createElement("canvas");
     var ctx = canvas.getContext("2d");
+
+    // create prebuilt node
+    if (preBuilt != undefined) {
+        console.log("prebuilt");
+        drawNode(undefined, true, preBuilt);
+        return;
+    } 
 
 	$("#globalMouse").mousemove(function(e) {
 		var paint = document.getElementById("paint").getBoundingClientRect();
@@ -42,7 +46,7 @@ function nodeCreationMode(toTerminate) {
 			&& 
 			(mouseY >= paint.y+circleSize && mouseY <= (paint.y+paint.height-circleSize))
 		) {
-			drawNode(e, false, {});
+			drawNode(e, false);
 		} else {
 			removeNode("ghost");
 		}
@@ -58,7 +62,7 @@ function nodeCreationMode(toTerminate) {
 			&& 
 			(mouseY >= paint.y+circleSize && mouseY <= (paint.y+paint.height-circleSize))
 		) {
-			drawNode(e, true, {});
+			drawNode(e, true);
 		}   
 	});
 
@@ -67,18 +71,33 @@ function nodeCreationMode(toTerminate) {
 		return nodeLetter.options[nodeLetter.selectedIndex].value;
 	}
 
-	// function deleteGhost() {
-	// 	var node document.getElementById(getName());
-	// }
-
-    function drawNode(e, pernament, settings) {
-        var circleSize = settings.circleSize || document.getElementById("circleSize").value;
-        var circleColor = settings.circleColor || document.getElementById("circleColor").value;
-        var borderSize = settings.borderSize || document.getElementById("borderSize").value;
-        var borderColor = settings.borderColor || document.getElementById("borderColor").value;
-        var fontValue = settings.fontSize || getName();
-        var fontSize = settings.fontSize || document.getElementById("fontSize").value;
-        var fontColor = settings.fontColor || document.getElementById("fontColor").value;
+    function drawNode(e, pernament, recover) {
+        var nodeName;
+        var circleSize;
+        var circleColor;
+        var borderSize;
+        var borderColor;
+        var fontSize; 
+        var fontColor;
+        var connections = [];
+        if (recover != undefined) {
+            nodeName = recover.nodeName;
+            circleSize = recover.settings.circleSize;
+            circleColor = recover.settings.circleColor;
+            borderSize = recover.settings.borderSize;
+            borderColor = recover.settings.borderColor;
+            fontSize = recover.settings.fontSize;
+            fontColor = recover.settings.fontColor;
+            connections = recover.Lines.slice(0);
+        } else {
+        	nodeName = getName();
+            circleSize = document.getElementById("circleSize").value;
+            circleColor = document.getElementById("circleColor").value;
+            borderSize = document.getElementById("borderSize").value;
+            borderColor = document.getElementById("borderColor").value;
+            fontSize = document.getElementById("fontSize").value;
+            fontColor = document.getElementById("fontColor").value;
+        }
 
         canvas.style = "border: " + borderSize + "px solid" + borderColor + ";border-radius: 50%;opacity:" + ((pernament)?"100%":"40%");
 	    canvas.height = circleSize;
@@ -88,26 +107,35 @@ function nodeCreationMode(toTerminate) {
 	    var Y = circleSize/2;
 
 	    ctx.beginPath();
-	    ctx.arc(X, Y, (circleSize / 2)*0.96, 0, 2 * Math.PI, false);
+	    ctx.arc(X, Y, (circleSize / 2), 0, 2 * Math.PI, false);
         ctx.fillStyle = circleColor;
         ctx.fill();
 	    ctx.lineWidth = borderSize;
 	    ctx.strokeStyle = defaultCircleOutlineColor;
-	    ctx.stroke();
 
 	    // Add a letter
 	    ctx.font = fontSize + "px serif";
 	    // TODO make a better letter placement
 	    ctx.fillStyle = fontColor; 
 
-	    ctx.fillText(fontValue, (circleSize / 2)-5, (circleSize / 2)+4);
-	    canvas.setAttribute("id", ((pernament)?getName():"ghost"));
+	    ctx.fillText(nodeName, (circleSize / 2)-5, (circleSize / 2)+4);
+	    canvas.setAttribute("id", ((pernament)?nodeName:"ghost"));
 	    document.getElementById("myDiagramDiv").appendChild(canvas);
 	    
-	    var rect = e.target.parentElement.getBoundingClientRect();
-        var mouseX = parseInt(e.clientX - rect.left);
-        var mouseY = parseInt(e.clientY - rect.top);
+	    
+        var mouseX;
+        var mouseY;
+        if (e != undefined) {
+            var rect = e.target.parentElement.getBoundingClientRect();
+            mouseX = parseInt(e.clientX - rect.left);
+            mouseY = parseInt(e.clientY - rect.top);
+        } else {
+            mouseX = recover.settings.x;
+            mouseY = recover.settings.y;
+        }
+
 	    if (pernament) {
+	    	globalZInndex++;
             console.log("df");
             console.log(canvas);
             canvas.style.position = "absolute";
@@ -117,31 +145,36 @@ function nodeCreationMode(toTerminate) {
 		            updateLineOnDrag(event, ui);
 		        }
 		    });
-	    	NODES_Storage[getName()] = {
+		    NODES_Storage[nodeName] = {
+		    	"settings": {},
+		    	"isVisited": false,
+	            "Lines": connections.slice(0)
+	        }
+	    	NODES_Storage[nodeName].settings = {
                 "circleSize": circleSize,
                 "circleColor": circleColor,
                 "borderSize": borderSize,
                 "borderColor": borderColor,
                 "fontSize": fontSize,
                 "fontColor": fontColor,
-	            "isVisited": false,
-	            "Lines": []
+                "zIndex": globalZInndex,
 	        }
 
 	        canvas = document.createElement("canvas");
     		ctx = canvas.getContext("2d");
 
-	        var node = document.getElementById(getName());
+	        var node = document.getElementById(nodeName);
 	        node.style.left = (mouseX-20)+"px";
 	        node.style.top = (mouseY-20)+"px";
 	        node.style.position = "absolute";
-            node.style.zIndex = "20";
-	        LetterManager(1, getName());
+            node.style.zIndex = globalZInndex;
+	        LetterManager(1, nodeName);
 	    } else {
 	    	var node = document.getElementById("ghost");
 	        node.style.left = (mouseX-20)+"px";
 	        node.style.top = (mouseY-20)+"px";
 	        node.style.position = "absolute";
+	        node.style.zIndex = "21";
 	    }
     }
 }
@@ -280,77 +313,56 @@ function removeNode(nodeID) {
 
 
 function ConnectNodes() {
-    // Calculating whenever start and beginning are actually
-    // near nodes
+    // Calculating whenever start and beginning are actually near nodes
 
-    // get all nodes
-    var placedNodes = document.getElementById('myDiagramDiv').getElementsByClassName('classNode ui-draggable ui-draggable-handle');
+    var matches = [];
+    // make copy of last line for a simplification
+    var lastLine = JSON.parse(JSON.stringify(storedLines[storedLines.length-1]));
+    // calculate all possible ranges
+    for (key in NODES_Storage) {
+        var node = document.getElementById(key);
+        var nodeX = node.offsetLeft + (NODES_Storage[key].settings.circleSize/2);
+        var nodeY = node.offsetTop + (NODES_Storage[key].settings.circleSize/2);
 
-    // find if line is close to two nodes
-    // inRadius[0] for a first node
-    // inRadius[1] for a second node
-    var inRadius = [[],[]];
-
-    for (var i=0;i<placedNodes.length;i++) {
-        //ar thisNode = placedNodes.item(i).getBoundingClientRect();
-        NodeX = placedNodes.item(i).offsetLeft+20;
-        NodeY = placedNodes.item(i).offsetTop+20;
-
-        // Distance between node and a first dot
-        var range1 = Math.sqrt(Math.pow(NodeX-storedLines[storedLines.length-1].x1, 2)+Math.pow(NodeY-storedLines[storedLines.length-1].y1, 2));
-
-        // Distance between node and a second dot
-        var range2 = Math.sqrt(Math.pow(NodeX-storedLines[storedLines.length-1].x2, 2)+Math.pow(NodeY-storedLines[storedLines.length-1].y2, 2));
-
-        // x, y, node_name, range, first/second dot
-        if (range1 < 40) {
-            inRadius[0].push([NodeX, NodeY, placedNodes.item(i).id, range1]);
-        } else if (range2 < 40) {
-            inRadius[1].push([NodeX, NodeY, placedNodes.item(i).id, range2]);
-        }
-    }
-
-    // find the closest nodes and delete the rest
-    // var dot0 = {
-    //     "range": inRadius[0]
-    // };
-    //var dot1Range = dot0Range;  
-    for (var i=0;i<inRadius.length;i++) {
-        for (var j=0;j<inRadius[i].length;j++) {
-            for (var k=j+1;k<inRadius[i].length;k++) {
-                if (inRadius[i][j] < inRadius[i][k]) {
-                    inRadius[i].splice(k, 1);
-                    j--;
-                    k--;
-                }
-            }
-        }
-    }
-
-    // i really dont like this
-    if (inRadius[0].length == 1 && inRadius[1].length == 1) {
-        storedLines[storedLines.length-1].x1 = inRadius[0][0][0];
-        storedLines[storedLines.length-1].y1 = inRadius[0][0][1];
-        storedLines[storedLines.length-1].x2 = inRadius[1][0][0];
-        storedLines[storedLines.length-1].y2 = inRadius[1][0][1];
-        storedLines[storedLines.length-1].color = defaultLineColor;
-        storedLines[storedLines.length-1].nodes = inRadius[0][0][2] + inRadius[1][0][2];
-        //storedLines[storedLines.length-1].node2 = inRadius[1][2];
-
-        NODES_Storage[inRadius[1][0][2]]["Lines"].push(inRadius[0][0][2]);
-        NODES_Storage[inRadius[0][0][2]]["Lines"].push(inRadius[1][0][2]);
-
+        var range = Math.sqrt(Math.pow(nodeX-lastLine.x1, 2)+Math.pow(nodeY-lastLine.y1, 2));
+        matches.push([0, range, key, nodeX, nodeY]);
+        range = Math.sqrt(Math.pow(nodeX-lastLine.x2, 2)+Math.pow(nodeY-lastLine.y2, 2));
+        matches.push([1, range, key, nodeX, nodeY]);
         
-    } else {
-        // delete a line?
     }
+
+    console.log(matches);
+
+    var finalDots = [[0, 9999999],[1, 9999999]];
+
+    for (var i=0;i<matches.length;i++) {
+        if (matches[i][1] < finalDots[matches[i][0]][1] && matches[i][1]<NODES_Storage[matches[i][2]].settings.circleSize) {
+            finalDots[matches[i][0]] = JSON.parse(JSON.stringify(matches[i]));
+        }
+    }
+
+    console.log(finalDots)
+
+    // if one or two ends didn't found closest point
+    if (finalDots[0][1] == 9999999 || finalDots[1][1] == 9999999 
+        || finalDots[0][2] == finalDots[1][2]) {
+        return;
+    }
+
+
+    storedLines[storedLines.length-1].x1 = finalDots[0][3];
+    storedLines[storedLines.length-1].y1 = finalDots[0][4];
+    storedLines[storedLines.length-1].x2 = finalDots[1][3];
+    storedLines[storedLines.length-1].y2 = finalDots[1][4];
+    storedLines[storedLines.length-1].color = lastLine.color;
+    storedLines[storedLines.length-1].nodes = finalDots[0][2] + finalDots[1][2];
+    //storedLines[storedLines.length-1].node2 = inRadius[1][2];
+
+    NODES_Storage[finalDots[0][2]]["Lines"].push(finalDots[1][2]);
+    NODES_Storage[finalDots[1][2]]["Lines"].push(finalDots[0][2]);
 
     // updating lines in the end
     redrawStoredLines();
-    //console.log(inRadius);
-    //console.log(placedNodes);
-    //console.log(NODES_Storage);
-    //console.log(storedLines);
 }
 
 

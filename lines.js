@@ -10,6 +10,7 @@ function updateLineOnDrag(event, ui) {
     //     return;
     // }
     //console.log(NODE_DELETION_MODE);
+    console.log(NODES_Storage[event.target.id]);
     if (NODES_Storage[event.target.id].Lines.length == 0) return;
 
     // TODO fix this
@@ -20,8 +21,8 @@ function updateLineOnDrag(event, ui) {
         for (var j=0;j<storedLines[i].nodes.length;j++) {
             if (storedLines[i].nodes[j] == event.target.id) {
                 var node = document.getElementById(event.target.id);
-                storedLines[i]["x"+(j+1)] = node.offsetLeft+20;
-                storedLines[i]["y"+(j+1)] = node.offsetTop+20;
+                storedLines[i]["x"+(j+1)] = node.offsetLeft+NODES_Storage[event.target.id].settings.circleSize/2;
+                storedLines[i]["y"+(j+1)] = node.offsetTop+NODES_Storage[event.target.id].settings.circleSize/2;
                 flag = true;
             }
         }
@@ -45,11 +46,15 @@ function LinesHandler(toTerminate) {
         delete lineCtx;
         return;
     }
-    var canvas = document.querySelector('#paint');
-    var lineCtx = canvas.getContext('2d');
+    var canvas = document.querySelector("#paint");
+    var lineCtx = canvas.getContext("2d");
     var isDown;
     var startX;
     var startY;
+
+    // function coordinates() {
+    //     return ({x: 2, y:});
+    // }
 
     function isInsideBox(e) {
         var paint = document.getElementById("paint").getBoundingClientRect();
@@ -79,26 +84,28 @@ function LinesHandler(toTerminate) {
             handleMouseUp(e);
         }
     });
-    $("#globalMouse").click(function(e) {
-        if (!isInsideBox(e)) {
-            return;
-        }
-        storedLines.length = 0;
-        for (key in NODES_Storage) {
-            NODES_Storage[key].Lines.length = 0;
-        }
-        redrawStoredLines();
-    });
+    // $("#globalMouse").click(function(e) {
+    //     if (!isInsideBox(e)) {
+    //         return;
+    //     }
+    //     storedLines.length = 0;
+    //     for (key in NODES_Storage) {
+    //         NODES_Storage[key].Lines.length = 0;
+    //     }
+    //     redrawStoredLines();
+    // });
     window.addEventListener("resize", resizeScreen, true);
     resizeScreen = function () {
         var sketch = document.querySelector('#myDiagramDiv');
         var sketch_style = getComputedStyle(sketch);
         canvas.width = parseInt(sketch_style.getPropertyValue('width'));
         canvas.height = parseInt(sketch_style.getPropertyValue('height'));
+        //canvas.style.zIndex = 19;
         lineCtx.strokeStyle = document.getElementById("lineColor").value;
         lineCtx.lineWidth = document.getElementById("lineWidth").value;
         lineCtx.lineJoin = "round";
         lineCtx.lineCap = "round";
+        redrawStoredLines();
     }
 
 
@@ -209,10 +216,13 @@ function LinesHandler(toTerminate) {
                 var y = (storedLines[i].y1+storedLines[i].y2)/2+20;
             }
 
-            lineCtx.font = storedLines[i].letter.font;
-            lineCtx.fillStyle = storedLines[i].letter.fillStyle; 
-            lineCtx.fillText(storedLines[i].letter.text, x, y);
+            if (storedLines[i].letter.text != undefined) {
+                lineCtx.font = storedLines[i].letter.font;
+                lineCtx.fillStyle = storedLines[i].letter.fillStyle; 
+                lineCtx.fillText(storedLines[i].letter.text, x, y);
+            }
         }
     }
     resizeScreen();
+    redrawStoredLines();
 }
