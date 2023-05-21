@@ -1,3 +1,5 @@
+
+/*Main drawing panel*/
 .container_row{
   display: flex;
   /*width: 90.2%;*/
@@ -9,7 +11,7 @@
 .layer1 {
   width: 100%;
   background-color: rgba(255,0,0,0.5);  /* red */
-  z-index: 0;
+  z-index: 1;
   border: 1px solid #5C6AC4;
   border-radius: 10px;
 }
@@ -18,19 +20,11 @@
   width: 100%;
   background-color: rgba(0,0,255,0.5);  /* blue */
   /*margin-left: -100%;*/
-  z-index: 1;
+  z-index: 0;
   border: 1px solid #5C6AC4;
   border-radius: 10px;
 }
-
-
-
-
-
-
-
-
-
+/*----------------------------*/
 
 
 .title {
@@ -40,30 +34,6 @@
   border: 1px solid;
   border-radius: 10px;
 }
-
-/*#myDiagramDiv {
-  padding-top: 0.5%;
-  width: 20%; 
-  height: 20%;
-}*/
-
-/*#paint {
-  padding-top: 0.5%;
-  position: absolute;
-  z-index: 0;
-}*/
-
-/*.drawingPanel {
-  width: 95%; 
-  height: 95%;
-  background-color: #1e549f; 
-  border-radius: 15px;
-}
-.drawingPanel2 {
-  background-color: #ffffff; 
-  border-radius: 15px;
-  position: relative;
-}*/
 
 
 #canvas {
@@ -133,17 +103,6 @@ body {
     font-size: 18px;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -364,11 +323,36 @@ ul {
 
 
 
+#autoFont {
+  border-radius: 15px;
+  border: 1px solid;
+  border-color: #5C6AC4;
+  word-wrap: break-word;
+  background-color: #1d2450;
+  color: #ffffff;
+  padding: 4px;
+}
+
+
+/* Add a background color on hover */
+#autoFont:hover {
+  background-color: #9da6dc;
+}
 
 
 
-/*radio button*/
+#lineCostButton {
+  border-radius: 15px;
+  border: 1px solid;
+  border-color: #5C6AC4;
+  word-wrap: break-word;
+  background-color: #1d2450;
+  color: #ffffff;
+  padding: 4px;
+}
 
 
-
-/*________________________ */
+/* Add a background color on hover */
+#lineCostButton:hover {
+  background-color: #9da6dc;
+}

@@ -8,6 +8,7 @@ function saveStateCookie() {
         var node = document.getElementById(key);
         tempNODES_Storage[key].x = node.offsetLeft+20;
         tempNODES_Storage[key].y = node.offsetTop+20;
+
     }
 
     document.cookie = JSON.stringify(tempNODES_Storage) + "<--->";
@@ -22,6 +23,7 @@ function saveStateCookie() {
         NODE_Names.push(select_letters[i].value);
     }
     document.cookie += JSON.stringify(NODE_Names);
+    console.log(document.cookie);
 }
 
 // save button
@@ -102,7 +104,6 @@ function saveState() {
     var url = window.URL.createObjectURL(blobData);
     saveFile('archivo.txt',url);
 }
-
 
 function selectFile (contentType, multiple){
     return new Promise(resolve => {

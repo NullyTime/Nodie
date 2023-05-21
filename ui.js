@@ -2,7 +2,15 @@
 // 1 - node creation mode
 // 2 - line creation mode
 // 3 - deletion mode 
-var EDITOR_MODE = 2;
+var EDITOR_MODE = 0;
+
+
+function changeDraggable(change) {
+    for (key in NODES_Storage) {
+        var node = document.getElementById(key);
+        $(node).draggable(change);
+    }
+}
 
 function switchFunction() {
 	if (EDITOR_MODE == 1) nodeCreationMode(true);
@@ -27,9 +35,13 @@ function NodeMode() {
 function LineMode() {
 	if (EDITOR_MODE == 2) {
 		EDITOR_MODE = 0;
+        changeDraggable("enable");
 		returnButtonsBack();
+        LinesHandler(true);
 		return;
 	}
+    changeDraggable("disable");
+    LinesHandler();
 	switchFunction();
 	returnButtonsBack();
 	EDITOR_MODE = 2;
@@ -44,6 +56,7 @@ function DeleteMode() {
 		returnButtonsBack();
 		return;
 	}
+    switchFunction();
 	returnButtonsBack();
 	EDITOR_MODE = 3;
 	var button = document.getElementById("button3");
@@ -59,6 +72,60 @@ function returnButtonsBack() {
 		button.style["background-color"] = "";
 	}
 }
+
+
+function setAutoFontValue() {
+    var button = document.getElementById("autoFont");
+    if (button.value == "Manual Font Size Mode") return;
+    var circleSize = document.getElementById("circleSize");
+    var fontSize = document.getElementById("fontSize");
+    fontSize.value = (Math.round(circleSize.value / 3)+4);
+    fontSize.disabled = true;
+}
+function autoFontGenerator() {
+    var button = document.getElementById("autoFont");
+    var fontSize = document.getElementById("fontSize");
+    if (button.value == "Auto Font Size Mode") {
+        button.value = "Manual Font Size Mode";
+        button.style["background-color"] = "#1d2450";
+        fontSize.disabled = false;
+    } else {
+        button.value = "Auto Font Size Mode";
+        button.style["background-color"] = "#9da6dc";
+        setAutoFontValue();
+    }
+
+}
+
+// No Cost Mode button handler
+function noCostTooGreat() {
+    var button = document.getElementById("lineCostButton");
+    var cost = document.getElementById("lineCost");
+    cost.disabled = !cost.disabled;
+    if (cost.disabled) {
+        button.value = "No Cost Mode";
+    } else {
+        button.value = "Pricy Mode";
+    }
+}
+
+// to set up colors on start
+function defaultColorFields() {
+    var defaults = {
+        "circleColor": "#FD1385",
+        "fontColor": "#000000",
+        "borderColor": "#000000",
+        "lineColor": "#23C1FF"
+    }
+    for (key in defaults) {
+        var panel = document.getElementById(key);
+        panel.value = defaults[key];
+    }
+
+    // update pen for a line
+    resizeScreen();
+}
+
 
 // Handles adding/removing letters from a list
 function LetterManager(choice, letter) {
@@ -127,4 +194,8 @@ function LetterManager(choice, letter) {
 function changeInputLength(inputPlace) {
 	var elem = document.getElementById(inputPlace);
 	elem.size = ((elem.value.length <= 10)?elem.value.length+2:elem.size);
+
+    if (inputPlace == "circleSize") {
+        setAutoFontValue();
+    }
 }

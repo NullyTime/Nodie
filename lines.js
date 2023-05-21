@@ -1,6 +1,3 @@
-const defaultLineColor = "aqua";
-
-
 // all lines on the field
 var storedLines = [];
 
@@ -8,11 +5,11 @@ var storedLines = [];
 var redrawStoredLines;
 
 function updateLineOnDrag(event, ui) {
-    if (NODE_DELETION_MODE) {
-        nodeRemoval(false, event);
-        return;
-    }
-    console.log(NODE_DELETION_MODE);
+    // if (NODE_DELETION_MODE) {
+    //     nodeRemoval(false, event);
+    //     return;
+    // }
+    //console.log(NODE_DELETION_MODE);
     if (NODES_Storage[event.target.id].Lines.length == 0) return;
 
     // TODO fix this
@@ -35,48 +32,78 @@ function updateLineOnDrag(event, ui) {
 }
 
 
-var canvasUpdater;
-var lineCtx;
-
 // Draws a line between two points
-function LinesHandler() {
-	// update canvas on screen resize
-	canvasUpdater = function() {
-		canvas.width = parseInt(sketch_style.getPropertyValue('width'));
-    	canvas.height = parseInt(sketch_style.getPropertyValue('height'));
-	}
+var resizeScreen = function(){};
+function LinesHandler(toTerminate) {
+    console.log("fuck me")
+    if (toTerminate) {
+        $("#globalMouse").unbind("mousemove");
+        $("#globalMouse").unbind("mousedown");
+        $("#globalMouse").unbind("mouseup");
+        $("#globalMouse").unbind("click");
+        delete canvas;
+        delete lineCtx;
+        return;
+    }
     var canvas = document.querySelector('#paint');
-    lineCtx = canvas.getContext('2d');
-    var sketch = document.querySelector('#myDiagramDiv');
-    var sketch_style = getComputedStyle(sketch);
-    canvas.width = parseInt(sketch_style.getPropertyValue('width'));
-    canvas.height = parseInt(sketch_style.getPropertyValue('height'));
+    var lineCtx = canvas.getContext('2d');
     var isDown;
-    lineCtx.strokeStyle = defaultLineColor;
-    lineCtx.lineWidth = 3;
-    lineCtx.lineJoin = "round";
-    lineCtx.lineCap = "round";
+    var startX;
+    var startY;
 
-    $("#paint").mousedown(function(e) {
-        handleMouseDown(e);
+    function isInsideBox(e) {
+        var paint = document.getElementById("paint").getBoundingClientRect();
+        var rect = e.target.parentElement.getBoundingClientRect();
+        var mouseX = parseInt(e.clientX);
+        var mouseY = parseInt(e.clientY);
+        return (
+        (mouseX >= paint.x && mouseX <= paint.x+paint.width)
+        && 
+        (mouseY >= paint.y&& mouseY <= paint.y+paint.height))
+        
+    }
+    $("#globalMouse").mousedown(function(e) {
+        console.log("sdf3");
+        if (isInsideBox(e)) {
+            console.log("sdf");
+            handleMouseDown(e);
+        }
     });
-    $("#paint").mousemove(function(e) {
-        handleMouseMove(e);
+    $("#globalMouse").mousemove(function(e) {
+        if (isInsideBox(e)) {
+            handleMouseMove(e);
+        }
     });
-    $("#paint").mouseup(function(e) {
-        handleMouseUp(e);
+    $("#globalMouse").mouseup(function(e) {
+        if (isInsideBox(e)) {
+            handleMouseUp(e);
+        }
     });
-
-    $("#clear").click(function() {
+    $("#globalMouse").click(function(e) {
+        if (!isInsideBox(e)) {
+            return;
+        }
         storedLines.length = 0;
         for (key in NODES_Storage) {
             NODES_Storage[key].Lines.length = 0;
         }
         redrawStoredLines();
     });
+    window.addEventListener("resize", resizeScreen, true);
+    resizeScreen = function () {
+        var sketch = document.querySelector('#myDiagramDiv');
+        var sketch_style = getComputedStyle(sketch);
+        canvas.width = parseInt(sketch_style.getPropertyValue('width'));
+        canvas.height = parseInt(sketch_style.getPropertyValue('height'));
+        lineCtx.strokeStyle = document.getElementById("lineColor").value;
+        lineCtx.lineWidth = document.getElementById("lineWidth").value;
+        lineCtx.lineJoin = "round";
+        lineCtx.lineCap = "round";
+    }
+
 
     function handleMouseDown(e) {
-        // ignore line when in deletion mode
+        // ignore code when in wrong mode
         if(EDITOR_MODE != 2) {
             return;
         }
@@ -90,7 +117,7 @@ function LinesHandler() {
     }
 
     function handleMouseMove(e) {
-        // ignore line when in deletion mode
+        // ignore code when in wrong mode
         if(EDITOR_MODE != 2) {
             return;
         }
@@ -110,7 +137,7 @@ function LinesHandler() {
         lineCtx.lineTo(mouseX, mouseY);
         lineCtx.stroke()
 
-        if (document.getElementById('scales').checked) {
+        if (!document.getElementById("lineCost").disabled) {
             lineCtx.font = "14px serif";
             lineCtx.fillStyle = "#FFFFFF"; 
 
@@ -120,7 +147,7 @@ function LinesHandler() {
     }
 
     function handleMouseUp(e) {
-        // ignore line when in deletion mode
+        // ignore code when in wrong mode
         if(EDITOR_MODE != 2) {
             return;
         }
@@ -133,7 +160,7 @@ function LinesHandler() {
             y1: startY,
             x2: mouseX,
             y2: mouseY,
-            color: defaultLineColor,
+            color: lineCtx.strokeStyle,
             letter: {
                 font: undefined,
                 fillStyle: undefined,
@@ -143,7 +170,7 @@ function LinesHandler() {
         });
 
         // copy-paste is a bad practice. but
-        if (document.getElementById('scales').checked) {
+        if (!document.getElementById("lineCost").disabled) {
             storedLines[storedLines.length-1].letter["font"] = "14px serif";
             storedLines[storedLines.length-1].letter["fillStyle"] = "#FFFFFF";
             storedLines[storedLines.length-1].letter["text"] = document.getElementById("lineCost").value;
@@ -187,4 +214,5 @@ function LinesHandler() {
             lineCtx.fillText(storedLines[i].letter.text, x, y);
         }
     }
+    resizeScreen();
 }
