@@ -4,36 +4,44 @@
       <meta charset="UTF-8">
       <title>NODIE</title>
       <link rel="stylesheet" href="styles.css" />
-      <!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-         <script type="text/javascript" src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script> -->
       <script type="text/javascript" src="./libs/jquery-3.6.4.min.js"></script>
       <script type="text/javascript" src="./libs/jquery-ui.min.js"></script>
       <script src="./libs/FileSaver.js"></script>
-      <script src="script.js"></script> 
+      <script src="nodes.js"></script>
+      <script src="lines.js"></script> 
+      <script src="ui.js"></script>
+      <script src="tasks.js"></script>
+      <script src="save.js"></script>
    </head>
    <body id="globalMouse">
       <div class="sidenav">
          <div class="title">NODIE</div>
-         <div class="mainTools">
+         <div id="mainTools" class="mainTools">
          	<div class="main_menu">
-				<button style="border-top-left-radius: 15px; width:calc(100%/3)" onclick="nodeCreationMode()">Node Mode</button>
-				<button style="width:calc(100%/3)">Line Mode</button>
-				<button style="border-top-right-radius: 15px; width:calc(100%/3)" onclick="nodeRemoval(true)">Deletion</button>
+				<button id="button1" style="border-top-left-radius: 15px; width:calc(100%/3)" onclick="NodeMode()">Node Mode</button>
+				<button id="button2" style="width:calc(100%/3)" onclick="LineMode()">Line Mode</button>
+				<button id="button3" style="border-top-right-radius: 15px; width:calc(100%/3)" onclick="DeleteMode()">Deletion</button>
          	</div>
          	<div style="border-bottom: 1px solid;border-color: #5C6AC4;"></div>
          	<div style="padding-bottom: 5px"></div>
          	
-
+         	<br>
 			<div id="faq">
 			  <ul>
 			    <li>
 			      <input type="checkbox" checked>
 			      <i></i>
 			      <h2>Nodes</h2>
-			      <p>Letter
-			      	
+			      <p>
+			      	Name: 
 			      	<select name="node_names" id="node_names"></select>
-			      	<button id="makeNodders" type="button" onclick="makeNode()" style=".button">Create Node</button>
+			      	<br>
+			      	Size:
+			      	<input id="circleSize" type="number" size="3" value=40 oninput="changeInputLength('circleSize')">
+			      	<br>
+			      	Node Color:
+			      	<br>
+			      	Name Color:
 			      </p>
 			    </li>
 			    <li>
@@ -41,12 +49,18 @@
 			      <i></i>
 			      <h2>Lines</h2>
 			      <p>
-			      	Line Cost: 
+			      	
+			      	Cost: 
 		            <input id="lineCost" type="number" size="3" value=3 oninput="changeInputLength('lineCost')">
 		            <br>
-		            Line Width: 
+		            Width: 
 		            <input id="lineWidth" type="number" size="3" min="1" max="15" value="2">
 		            <input type="checkbox" id="scales" name="scales" onchange="document.getElementById('lineCost').disabled = !this.checked;" checked />
+		            <br>
+		            Color
+		            <br>
+		            <button id="clear">Remove All Lines</button>
+		            <input type="radio" id="scales" name="scales" onchange="document.getElementById('lineCost').disabled = !this.checked;" checked/>
 			      </p>
 			    </li>
 			    <li>
@@ -76,59 +90,12 @@
 			    </li>
 			  </ul>
 			</div>
-
-
-
-
-
-
-
-            <!-- <button id="makeNodders" type="button" onclick="makeNode()" style=".button">Create Node</button> -->
-            <!-- <select name="node_names" id="node_names"></select> -->
-            <!-- <input id="lineCost" type="text" size="9" disabled=""> 
-            <input id="lineCost" type="number" size="3" value=3 oninput="changeInputLength('lineCost')">
-            || line width
-            <input id="lineWidth" type="number" size="3" min="1" max="15" value="2">
-            <input type="checkbox" id="scales" name="scales" onchange="document.getElementById('lineCost').disabled = !this.checked;" checked /> -->
-
-            
-         <!-- <button type="button" onclick="saveStateCookie()" style=".button">Save in cookie</button>
-         <button type="button" onclick="loadStateCookie()" style=".button">Load from cookies</button>  -->
-
+			<br>
          </div>
       </div>
-      <div style="color: #FFFFFF">
-         <!-- <button id="makeNodders" type="button" onclick="makeNode()" style=".button">Create Node</button>
-            with a name
-            <select name="node_names" id="node_names"></select>
-            || -->
-         <!-- <input type="checkbox" id="scales" name="scales" onchange="document.getElementById('lineCost').disabled = !this.checked;" /> -->
-         <!-- <input type="checkbox" id="scales" name="scales" onchange="document.getElementById('lineCost').disabled = !this.checked;" checked />
-            Line with a cost 
-            <input id="lineCost" type="text" size="9" disabled=""> 
-            <input id="lineCost" type="number" size="3" value=3 oninput="changeInputLength('lineCost')">
-            || line width
-            <input id="lineWidth" type="number" size="3" min="1" max="15" value="2"> -->
+
+      <div id="myDiagramDiv" draggable="false" style="background-color: #1e549f; border-radius: 15px;">
+         <canvas id="paint" style="border-radius: 15px;border: 1px solid black;"/>
       </div>
-      <!-- <br> -->
-      <!-- <button type="button" onclick="nodeRemoval(true)" style=".button">Enable Node Removal Mode</button>
-         <button type="button">Remove All Nodes</button>
-         <br>
-         <button id="clear">Remove All Lines</button>
-         <button type="button" onclick="aaa()" style=".button">a1a</button>
-         <button type="button" onclick="b()" style=".button">aaa</button>
-         <button type="button" onclick="InDepth()" style=".button">In depth</button>
-         <button type="button" onclick="inWidth()" style=".button">In width</button>
-         <button type="button" onclick="UnmarkLines()" style=".button">Unmark Lines</button>
-         <button type="button" onclick="inWidth()" style=".button">In width</button> -->
-      <!-- <br>
-         <button type="button" onclick="saveState()" style=".button">Save as</button>
-         <button type="button" onclick="saveStateCookie()" style=".button">Save in cookie</button>
-         <button type="button" onclick="loadState()" style=".button">Load from file</button>
-         <button type="button" onclick="loadStateCookie()" style=".button">Load from cookies</button> -->
-      <div id="myDiagramDiv" draggable="false" style="width:86%; height:400px; background-color: #1e549f; border-radius: 15px; position: fixed; left: 13.5%;">
-         <canvas id="paint" style="height:400px;border-radius: 15px;border: 1px solid black"/>
-      </div>
-      <div id="sketch"></div>
    </body>
 </html>

@@ -1,3 +1,38 @@
+.container_row{
+  display: flex;
+  /*width: 90.2%;*/
+  height: 95%;
+  padding-top: 1%;
+/*  float: right;*/
+}
+
+.layer1 {
+  width: 100%;
+  background-color: rgba(255,0,0,0.5);  /* red */
+  z-index: 0;
+  border: 1px solid #5C6AC4;
+  border-radius: 10px;
+}
+
+.layer2{
+  width: 100%;
+  background-color: rgba(0,0,255,0.5);  /* blue */
+  /*margin-left: -100%;*/
+  z-index: 1;
+  border: 1px solid #5C6AC4;
+  border-radius: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
 .title {
   color: #5C6AC4;
   font-size: 40px;
@@ -6,17 +41,19 @@
   border-radius: 10px;
 }
 
-#myDiagramDiv {
+/*#myDiagramDiv {
+  padding-top: 0.5%;
   width: 20%; 
   height: 20%;
-}
+}*/
 
-#paint {
+/*#paint {
+  padding-top: 0.5%;
   position: absolute;
   z-index: 0;
-}
+}*/
 
-.drawingPanel {
+/*.drawingPanel {
   width: 95%; 
   height: 95%;
   background-color: #1e549f; 
@@ -26,7 +63,7 @@
   background-color: #ffffff; 
   border-radius: 15px;
   position: relative;
-}
+}*/
 
 
 #canvas {
@@ -41,23 +78,28 @@ body {
 }
 
 
+/*Button menu*/
 .mainTools {
   border-radius: 15px;
   border: 1px solid;
   border-color: #5C6AC4;
+  word-wrap: break-word;
 }
 
 
 /* The sidebar menu */
 .sidenav {
   height: 95%;
-  width: 250px;
+  width: 15%;
   position: fixed;
   z-index: 1;
   top: 1%;
   left: 0.4%;
   background-color: #081f37;
   overflow-x: hidden; 
+  max-width: 300px;
+  min-width: 270px;
+  user-select: none;
 }
 
 /* The navigation menu links */
@@ -108,13 +150,13 @@ body {
 
 
 .main_menu button {
-  background-color: #04AA6D; /* Green background */
-  border: 1px solid green; /* Green border */
+  background-color: #5c6ac4; /* Button background */
+  border: 1px solid black; /* Border */
   color: white; /* White text */
   padding: 5px; /* Some padding */
   cursor: pointer; /* Pointer/hand icon */
   float: left; /* Float the buttons side by side */
-
+  height: 100%;
 }
 
 .main_menu button:not(:last-child) {
@@ -130,10 +172,7 @@ body {
 
 /* Add a background color on hover */
 .main_menu button:hover {
-  background-color: #3e8e41;
-}
-.main_menu button:onpress {
-  background-color: #ffffff;
+  background-color: #9da6dc;
 }
 
 
@@ -227,7 +266,7 @@ section.faq {
   margin: 0;
   background: #081f37; /*Background color for whole button thing*/
   box-shadow: 0 3px 10px -2px rgba(0,0,0,0.1);
-  border: 1px solid ;
+  border: 1px solid #313d87;
 }
 #faq ul li + li {
   margin-top: 8px;
@@ -296,10 +335,6 @@ section.faq {
   padding: 0;
 }
 
-html, body {
-  height: 100%;
-}
-
 a,
 a:visited,
 a:focus,
@@ -323,11 +358,6 @@ ul {
   list-style: none;
 }
 
-img {
-  vertical-align: middle;
-  height: auto;
-  width: 100%;
-}
 
 
 
@@ -337,36 +367,8 @@ img {
 
 
 
+/*radio button*/
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*________________________ */
