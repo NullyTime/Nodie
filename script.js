@@ -17,15 +17,16 @@
         - optimize code and delete useless outputs
         - delete line duplicates if it was intentionally connected >1 times
         - make so u can presson the node while drawing a line
-
-
 */
 
 
 //Diameter of the circle
 const circleSize = 40;
 
-const defaultLineColor = "orange";
+const defaultLineColor = "aqua";
+const defaultCircleOutlineColor = '#000000';
+const defaultCircleFillColor = '#FD1385';
+
 var NODES_Storage = {};
 
 // how many pixels is enough to trigger
@@ -235,8 +236,8 @@ function aaa() {
     // var node = document.getElementById("A");
     // var a = node.offsetLeft;
     // var b = node.offsetTop;
-	
-	
+    
+    
 
     // // draw a red line
     // ctx.beginPath();
@@ -310,6 +311,7 @@ function saveStateCookie() {
     // adding location for each node
     for (key in tempNODES_Storage) {
         var node = document.getElementById(key);
+        console.log(node);
         tempNODES_Storage[key].x = node.offsetLeft+20;
         tempNODES_Storage[key].y = node.offsetTop+20;
     }
@@ -578,10 +580,10 @@ function makeNode(save_state) {
     ctx.beginPath();
     ctx.arc(X, Y, circleSize / 2, 0, 2 * Math.PI, false);
     ctx.lineWidth = 2;
-    ctx.strokeStyle = '#FF0000';
+    ctx.strokeStyle = defaultCircleOutlineColor;
     ctx.stroke();
 
-    ctx.fillStyle = "#FF0000";
+    ctx.fillStyle = defaultCircleFillColor;
     ctx.fill(); 
 
     // Add a letter
@@ -622,14 +624,41 @@ function makeNode(save_state) {
 }
 
 function nodeRemoval(switchMode, event) {
-    console.log("234");
     if (switchMode && !NODE_DELETION_MODE) {
         NODE_DELETION_MODE = true;
 
         //make every node undraggable
+        var test = [];
         for (key in NODES_Storage) {
-            var node = document.getElementById(key);
-            $(node).draggable("disable");
+            test.push(document.getElementById(key));
+            $(test[test.length-1]).draggable("disable");
+            $(test[test.length-1]).click(function (clicked_node) {
+                console.log(clicked_node.target);
+                var placedNodes = document.getElementById('myDiagramDiv').getElementsByClassName('classNode ui-draggable ui-draggable-handle');
+                var NodesPosition = [];
+                //console.log(placedNodes);
+
+                // saving positions
+                for (var i=0;i<placedNodes.length;i++) {
+                    if (placedNodes[i].id == clicked_node.target.id) continue;
+                    console.log(placedNodes[i].getBoundingClientRect());
+                    var buff = placedNodes[i].getBoundingClientRect();
+                    NodesPosition.push([placedNodes[i].id , buff.x, buff.y]);
+                }
+                console.log(NodesPosition);
+                LetterManager(2, clicked_node.target.id);
+                var parent = document.getElementById('myDiagramDiv');
+                parent.removeChild(clicked_node.target);
+
+                // recovering old positions
+                for (var i=0;i<NodesPosition.length;i++) {
+                    var node = document.getElementById(NodesPosition[i][0]);
+                    console.log(node.style);
+                    node.style.left = NodesPosition[i][1];
+                    node.style.top = NodesPosition[i][2];
+                    console.log(node);
+                }
+            })
         }
 
         document.getElementById("makeNodders").disabled = true;
@@ -645,11 +674,6 @@ function nodeRemoval(switchMode, event) {
         document.getElementById("makeNodders").disabled = false;
         return;
     }
-
-    console.log("2sdfsdfdfs");
-    var node = document.getElementById(event.target.id);
-    var parent = document.getElementById('myDiagramDiv');
-    parent.removeChild(node);
 }
 
 function updateLineOnDrag(event, ui) {
@@ -756,56 +780,65 @@ function ConnectNodes() {
 
 // Handles adding/removing letters from a list
 function LetterManager(choice, letter) {
-	function insertNames(arr) {
-		for (var i = 0; i <= arr.length - 1; i++) {
-		    var opt = document.createElement('option');
-		    opt.value = arr[i];
-		    opt.innerHTML = arr[i];
-		    select.appendChild(opt);
-		}
-	}
+    function insertNames(arr) {
+        for (var i = 0; i <= arr.length - 1; i++) {
+            var opt = document.createElement("option");
+            opt.value = arr[i];
+            opt.innerHTML = arr[i];
+            select.appendChild(opt);
+        }
+    }
     function wipeLineHTML() {
         for (var i=0;i<select.length;i++) {
             select.remove(i);
             i--;
         }
     }
-	// 0 = add all letters
-	// 1 = add a node to a list
-	// 2 = remove node from a list
+    // 0 = add all letters
+    // 1 = remove a node from list
+    // 2 = add node to a list
     // 3 = "load" functionality
 
-	var select = document.getElementById("node_names");
-	switch(choice) {
-		case 0:
-			var NODE_Names = "abcdefghijklmnopqrstuvwxyz".toUpperCase().split('');
-			insertNames(NODE_Names);
-			break;
+    var select = document.getElementById("node_names");
+    switch(choice) {
+        case 0:
+            var NODE_Names = "abcdefghijklmnopqrstuvwxyz".toUpperCase().split('');
+            insertNames(NODE_Names);
+            break;
 
-		case 1:
-			var NODE_Names = [];
-			for (var i=0;i<select.length;i++) {
-				NODE_Names.push(select[i].value);
-			}
+        case 1:
+            var NODE_Names = [];
+            for (var i=0;i<select.length;i++) {
+                NODE_Names.push(select[i].value);
+            }
 
-			wipeLineHTML();
-			NODE_Names.splice(NODE_Names.indexOf(letter), 1);
-			insertNames(NODE_Names);
+            wipeLineHTML();
+            NODE_Names.splice(NODE_Names.indexOf(letter), 1);
+            insertNames(NODE_Names);
 
-			if (select.length == 0) {
-				var button = document.getElementById("makeNodders");
-				button.setAttribute("disabled", "disabled");
-			}
-			break;
+            if (select.length == 0) {
+                var button = document.getElementById("makeNodders");
+                button.setAttribute("disabled", "disabled");
+            }
+            break;
 
-		case 2:
-			break;
+        case 2:
+            var NODE_Names = [];
+            for (var i=0;i<select.length;i++) {
+                NODE_Names.push(select[i].value);
+            }
+
+            wipeLineHTML();
+            NODE_Names.push(letter);
+            NODE_Names.sort();
+            insertNames(NODE_Names);
+            break;
 
         case 3:
             wipeLineHTML();
             insertNames(letter);
             break;
-	}
+    }
 }
 
 // Draws a line between two points
@@ -818,7 +851,7 @@ function LinesHandler() {
     canvas.height = parseInt(sketch_style.getPropertyValue('height'));
     var isDown;
     ctx.strokeStyle = defaultLineColor;
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 3;
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
 
@@ -869,10 +902,19 @@ function LinesHandler() {
         var mouseY = parseInt(e.clientY - rect.top);
 
         // draw the current line
+        ctx.lineWidth = document.getElementById("lineWidth").value;
         ctx.beginPath();
         ctx.moveTo(startX, startY);
         ctx.lineTo(mouseX, mouseY);
         ctx.stroke()
+
+        if (document.getElementById('scales').checked) {
+            ctx.font = "14px serif";
+            ctx.fillStyle = "#FFFFFF"; 
+
+            var letter = document.getElementById("lineCost").value;
+            ctx.fillText(letter, (startX+mouseX)/2-10, (startY+mouseY)/2-10);
+        }
     }
 
     function handleMouseUp(e) {
@@ -889,8 +931,21 @@ function LinesHandler() {
             y1: startY,
             x2: mouseX,
             y2: mouseY,
-            color: defaultLineColor
+            color: defaultLineColor,
+            letter: {
+                font: undefined,
+                fillStyle: undefined,
+                text: undefined
+            },
+            width: document.getElementById("lineWidth").value
         });
+
+        // copy-paste is a bad practice. but
+        if (document.getElementById('scales').checked) {
+            storedLines[storedLines.length-1].letter["font"] = "14px serif";
+            storedLines[storedLines.length-1].letter["fillStyle"] = "#FFFFFF";
+            storedLines[storedLines.length-1].letter["text"] = document.getElementById("lineCost").value;
+        }
         ConnectNodes();
         redrawStoredLines();
     }
@@ -908,11 +963,26 @@ function LinesHandler() {
                 i--;
                 continue;
             }
+            // lines
             ctx.strokeStyle = storedLines[i].color;
+            ctx.lineWidth = storedLines[i].width;
             ctx.beginPath();
             ctx.moveTo(storedLines[i].x1, storedLines[i].y1);
             ctx.lineTo(storedLines[i].x2, storedLines[i].y2);
             ctx.stroke();
+
+            // letters
+            var x = (storedLines[i].x1+storedLines[i].x2)/2-10;
+            var y;
+            if (storedLines[i].y1>storedLines[i].y2) {
+                var y = (storedLines[i].y1+storedLines[i].y2)/2-10;
+            } else {
+                var y = (storedLines[i].y1+storedLines[i].y2)/2+20;
+            }
+
+            ctx.font = storedLines[i].letter.font;
+            ctx.fillStyle = storedLines[i].letter.fillStyle; 
+            ctx.fillText(storedLines[i].letter.text, x, y);
         }
     }
 }

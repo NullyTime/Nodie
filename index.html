@@ -5,8 +5,10 @@
     <title>Nodes</title>
     <link rel="stylesheet" href="styles.css" />
     <title>PR4</title>
-	<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-	<script type="text/javascript" src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+	<script type="text/javascript" src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script> -->
+	<script type="text/javascript" src="./libs/jquery-3.6.4.min.js"></script>
+	<script type="text/javascript" src="./libs/jquery-ui.min.js"></script>
 	<script src="./libs/all.min.js"></script>
 	<script src="./libs/FileSaver.js"></script>
 	<script src="script.js"></script> 
@@ -18,6 +20,16 @@
 	    	<button id="makeNodders" type="button" onclick="makeNode()" style=".button">Create Node</button>
 	    	with a name
 		    <select name="node_names" id="node_names"></select>
+		    ||
+		    <!-- <input type="checkbox" id="scales" name="scales" onchange="document.getElementById('lineCost').disabled = !this.checked;" /> -->
+		    <input type="checkbox" id="scales" name="scales" onchange="document.getElementById('lineCost').disabled = !this.checked;" checked />
+		    Line with a cost 
+		    <!--<input id="lineCost" type="text" size="9" disabled=""> -->
+		    <input id="lineCost" type="number" size="9" value=3>
+		    || line width
+		    <input id="lineWidth" type="number" size="2" min="1" max="15" value=3>
+
+
 		</div>
 	    <br>
 	    <button type="button" onclick="nodeRemoval(true)" style=".button">Enable Node Removal Mode</button>
@@ -29,6 +41,7 @@
 		<button type="button" onclick="InDepth()" style=".button">In depth</button>
 		<button type="button" onclick="inWidth()" style=".button">In width</button>
 		<button type="button" onclick="UnmarkLines()" style=".button">Unmark Lines</button>
+		<button type="button" onclick="inWidth()" style=".button">In width</button>
 		<br>
 		<button type="button" onclick="saveState()" style=".button">Save as</button>
 		<button type="button" onclick="saveStateCookie()" style=".button">Save in cookie</button>
