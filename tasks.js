@@ -41,6 +41,15 @@ function updateColoring() {
     redrawStoredLines();
 }
 
+function decipher(lineID, currentNode) {
+    var targetNode = lineGetById(lineID).nodes;
+    if (targetNode[0] == currentNode) {
+        return targetNode[1];
+    } else {
+        return targetNode[0];
+    }
+}
+
 function InDepth() {
     function nodeTail(main_node) {
         return (main_node[main_node.length-1]);
@@ -57,8 +66,6 @@ function InDepth() {
         NODES_Storage[key].isVisited = false;
     }
 
-    
-
     var results = [];
     var buff = "";
 
@@ -74,19 +81,10 @@ function InDepth() {
     console.log(storedLines)
     var failure = 0;
 
-    function decipher(lineID, currentNode) {
-        var targetNode = lineGetById(lineID).nodes;
-        if (targetNode[0] == nodeTail(main_node)) {
-            return targetNode[1];
-        } else {
-            return targetNode[0];
-        }
-    }
-
     while(true) {
         var i = 0;
         while (i<NODES_Storage[nodeTail(main_node)]["Lines"].length) {
-            var targetNode = decipher(NODES_Storage[nodeTail(main_node)]["Lines"][i], nodeTail(main_node));
+            var targetNode = decipher(NODES_Storage[nodeTail(main_node)]["Lines"][i], nodeTail(main_node), );
 
             // if we already visited this node, move to a new one
             if (NODES_Storage[targetNode]["isVisited"] == true) {
@@ -94,30 +92,18 @@ function InDepth() {
                 i += 1;
                 continue;
             }
-            // 
+
             actionsTodo.push(NODES_Storage[nodeTail(main_node)]["Lines"][i]);
 
             NODES_Storage[targetNode]["isVisited"] = true;
             testedNodes = 0;
             NodesFilled += 1;
-            buff += main_node[main_node.length-1] + " -> ";
-            buff += targetNode;
-            console.log(buff);
-            buff = "";
 
-            console.log(main_node);
             results.push(""+main_node[main_node.length-1]+targetNode);
-            console.log("results");
-            console.log(results);
             main_node.push(targetNode);
-            console.log("found node:" + main_node);
         }
-        console.log(nodeTail(main_node));
         if (testedNodes >= NODES_Storage[nodeTail(main_node)]["Lines"].length) {
-            console.log("Hit the wall");
-            console.log(main_node);
             main_node.pop(main_node.length-1);
-            console.log(main_node);
             testedNodes = 0;
             i += 1;
         }
@@ -138,37 +124,15 @@ function InDepth() {
         }
     }
 
-
-    for (var i=0;i<results.length;i++) {
-        var line = [];
-
-        //searching mathing
-        for (var j=0;j<storedLines.length;j++) {
-            if (storedLines[j].nodes == results[i] || reverseStr(storedLines[j].nodes) == results[i]) {
-                //storedLines[j].marked = "green";
-            }  
-        }
-    }
-    redrawStoredLines();
-    console.log(results);
-    console.log("The end");
-    console.log(actionsTodo);
-
     currentStep = 0;
     targetStep = 0;
     updatePage(currentStep, actionsTodo.length-1);
 }
 
 function inWidth() {
-    function reverseStr(text) {
-        return text.split("").reverse().join("");
-    }
     if (Object.keys(NODES_Storage).length == 0) {
         return;
     }
-
-    // clearning after last time
-    UnmarkLines();
 
     // add flag for visiting a node
     for (key in NODES_Storage) {
@@ -177,73 +141,56 @@ function inWidth() {
     }
 
     var nodePath = [];
-    nodePath.push("A");
-    NODES_Storage["A"].isVisited = true;
-    NODES_Storage["A"].isVisited2 = true;
+    var startingPoint = document.getElementById("TasksListCrown");
+    startingPoint = startingPoint.options[startingPoint.selectedIndex].value;
+    nodePath.push(startingPoint);
+    NODES_Storage[startingPoint].isVisited = true;
+    NODES_Storage[startingPoint].isVisited2 = true;
 
     var connections = [];
-
-    //var mainNodeIndex = 0;
-    var safelever = 0;
     while (true) {
         var mainNode = nodePath[nodePath.length-1];
         var connectedNodes = NODES_Storage[mainNode].Lines;
         for (var i=0;i<connectedNodes.length;i++)
         {
-            if (NODES_Storage[connectedNodes[i]].isVisited == false) {
-                connections.push(""+mainNode+connectedNodes[i]);
-                NODES_Storage[connectedNodes[i]].isVisited = true;
+            var targetNode = decipher(connectedNodes[i], mainNode);
+            if (NODES_Storage[targetNode].isVisited == false) {
+                connections.push(""+mainNode+targetNode);
+                NODES_Storage[targetNode].isVisited = true;
+                actionsTodo.push(connectedNodes[i]);
             }
         }
         
         // search for visited2
         var flag = false;
         for (var i=0;i<connectedNodes.length;i++) {
-            if (NODES_Storage[connectedNodes[i]].isVisited2 == false) {
-                NODES_Storage[connectedNodes[i]].isVisited2 = true;
+            var targetNode = decipher(connectedNodes[i], mainNode);
+            if (NODES_Storage[targetNode].isVisited2 == false) {
+                NODES_Storage[targetNode].isVisited2 = true;
                 flag = true;
-                nodePath.push(connectedNodes[i]);
-                console.log(nodePath);
+                nodePath.push(targetNode);
                 break;
             }
         }
         
-        //if didn't found, theb shift node path 
-        console.log(nodePath);
+        //if didn't found, then shift node path 
         if(!flag) {
-            console.log("backtracking");
             nodePath.splice(nodePath.length-1, 1);
         }
-        
-        
+           
         if (nodePath.length == 0) {
             break;
         }
-        // safelever++;
-        // if(safelever == 20) {
-        //     console.log("crashed");
-        //     break;
-        // }
     }
 
-    console.log(connections);
-    for (var i=0;i<connections.length;i++) {
-        var line = [];
-        
-        //searching mathing
-        for (var j=0;j<storedLines.length;j++) {
-            if (storedLines[j].nodes == connections[i] || reverseStr(storedLines[j].nodes) == connections[i]) {
-                console.log("fuc");
-                storedLines[j].color = "green";
-            }  
-        }
-    }
     // cleaning trash
     for (key in NODES_Storage) {
-        delete NODES_Storage[key].isVisited2
+        delete NODES_Storage[key].isVisited2;
     }
-    redrawStoredLines();
-    console.log("The end");
+
+    currentStep = 0;
+    targetStep = 0;
+    updatePage(currentStep, actionsTodo.length-1);
 }
 
 // remove all coloring done by Algorithms
