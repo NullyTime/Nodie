@@ -9,6 +9,7 @@ TODO:
     - line color doesnt work
     - make so minimal drawing panel will be limited by nodes on the edge,
     so script will add scroller for user
+    - borders
 
 
     Not important:

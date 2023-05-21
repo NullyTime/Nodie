@@ -1,5 +1,3 @@
-// need to save state for algorithms
-
 var currentStep = 0;
 var targetStep = 0;
 var actionsTodo = [-1];
@@ -53,9 +51,6 @@ function decipher(lineID, currentNode) {
 function InDepth() {
     function nodeTail(main_node) {
         return (main_node[main_node.length-1]);
-    }
-    function reverseStr(text) {
-        return text.split("").reverse().join("");
     }
 
     if (Object.keys(NODES_Storage).length == 0) {

@@ -33,12 +33,24 @@ function updateLineOnDrag(event, ui) {
     }
 }
 
-function removeLine(lineID) {
+function removeLine(lineID, ignore) {
+    // find and delete data from storedLines
     for (var i=0;i<storedLines.length;i++) {
         if (storedLines[i].id == lineID) {
             storedLines.splice(i, 1);
             redrawStoredLines();
-            return;
+            break;
+        }
+    }
+
+    // find line in NODES_Storage and delete it
+    for (var key in NODES_Storage) {
+        for (var i=0;i<NODES_Storage[key].Lines.length;i++) {
+            if (ignore == key) continue;
+            if (lineID == NODES_Storage[key].Lines[i]) {
+                NODES_Storage[key].Lines.splice(i, 1);
+                i--;
+            }
         }
     }
 }

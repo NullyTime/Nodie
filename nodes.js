@@ -4,7 +4,6 @@ var globalZInndex = 19;
 // main storage for node information
 var NODES_Storage = {};
 
-
 function nodeCreationMode(toTerminate, preBuilt) {
 	// to switch mode
 	if (toTerminate) {
@@ -110,8 +109,7 @@ function nodeCreationMode(toTerminate, preBuilt) {
 	    ctx.fillText(nodeName, (circleSize / 2)-5, (circleSize / 2)+4);
 	    canvas.setAttribute("id", ((pernament)?nodeName:"ghost"));
 	    document.getElementById("myDiagramDiv").appendChild(canvas);
-	    
-	    
+	        
         var mouseX;
         var mouseY;
         if (e != undefined) {
@@ -125,10 +123,7 @@ function nodeCreationMode(toTerminate, preBuilt) {
 
 	    if (pernament) {
 	    	globalZInndex++;
-            //console.log("df");
-            //console.log(canvas);
             canvas.style.position = "absolute";
-            //canvas.setAttribute("style.z-index", 2);
 	    	$(canvas).draggable({
 		        drag: function(event, ui) {
 		            updateLineOnDrag(event, ui);
@@ -247,7 +242,7 @@ function removeNode(node) {
 
 	// delete lines
 	for (var i=0;i<NODES_Storage[node.id].Lines.length;i++) {
-		removeLine(NODES_Storage[node.id].Lines[i]);
+		removeLine(NODES_Storage[node.id].Lines[i], node.id);
 	}
 	
 	var node = document.getElementById(node.id);

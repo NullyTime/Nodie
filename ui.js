@@ -177,7 +177,8 @@ function tasksMenu(choice) {
     }
 }
 
-function uiAlgorithChange(typeofAlgorithm) {
+function uiAlgorithChange() {
+    var typeofAlgorithm = document.getElementById("typeofAlgorithm");
     // frest start
     UnmarkLines();
 
