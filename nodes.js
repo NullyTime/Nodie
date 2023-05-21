@@ -152,8 +152,7 @@ function nodeCreationMode(toTerminate, preBuilt) {
 		    NODES_Storage[nodeName] = {
 		    	"settings": {},
 		    	"isVisited": false,
-	            "Lines": connections.slice(0),
-	            "LinesV2": []
+	            "Lines": connections.slice(0)
 	        }
 	    	NODES_Storage[nodeName].settings = {
                 "circleSize": circleSize,
@@ -246,21 +245,17 @@ function removeNode(node) {
 		return;
 	}
 
-	
 	// delete lines
-	for (var i=0;i<NODES_Storage[node.id].LinesV2.length;i++) {
-		removeLine(NODES_Storage[node.id].LinesV2[i]);
+	for (var i=0;i<NODES_Storage[node.id].Lines.length;i++) {
+		removeLine(NODES_Storage[node.id].Lines[i]);
 	}
 	
-
-
 	var node = document.getElementById(node.id);
 	if (node != undefined) {
 		var parent = document.getElementById("myDiagramDiv");
 		parent.removeChild(node);
 	}
 	LetterManager(2, node.id);
-
 	delete NODES_Storage[node.id];
 }
 
@@ -280,41 +275,34 @@ function ConnectNodes() {
         matches.push([0, range, key, nodeX, nodeY]);
         range = Math.sqrt(Math.pow(nodeX-lastLine.x2, 2)+Math.pow(nodeY-lastLine.y2, 2));
         matches.push([1, range, key, nodeX, nodeY]);
-        
     }
 
-    //console.log(matches);
-
+    // final coordinates that is the closest to a line
     var finalDots = [[0, 9999999],[1, 9999999]];
-
     for (var i=0;i<matches.length;i++) {
         if (matches[i][1] < finalDots[matches[i][0]][1] && matches[i][1]<NODES_Storage[matches[i][2]].settings.circleSize) {
             finalDots[matches[i][0]] = JSON.parse(JSON.stringify(matches[i]));
         }
     }
 
-    //console.log(finalDots)
-
-    // if one or two ends didn't found closest point
+    // if one or two ends didn't found closest point, terminate the line
     if (finalDots[0][1] == 9999999 || finalDots[1][1] == 9999999 
         || finalDots[0][2] == finalDots[1][2]) {
         return;
     }
 
-    storedLines[storedLines.length-1].id = 0+Date.now();
-    storedLines[storedLines.length-1].x1 = finalDots[0][3];
-    storedLines[storedLines.length-1].y1 = finalDots[0][4];
-    storedLines[storedLines.length-1].x2 = finalDots[1][3];
-    storedLines[storedLines.length-1].y2 = finalDots[1][4];
-    storedLines[storedLines.length-1].color = lastLine.color;
-    storedLines[storedLines.length-1].nodes = finalDots[0][2] + finalDots[1][2];
-    //storedLines[storedLines.length-1].node2 = inRadius[1][2];
+    var index = storedLines.length-1;
 
-    NODES_Storage[finalDots[0][2]]["Lines"].push(finalDots[1][2]);
-    NODES_Storage[finalDots[1][2]]["Lines"].push(finalDots[0][2]);
+    storedLines[index].id = 0+Date.now();
+    storedLines[index].x1 = finalDots[0][3];
+    storedLines[index].y1 = finalDots[0][4];
+    storedLines[index].x2 = finalDots[1][3];
+    storedLines[index].y2 = finalDots[1][4];
+    storedLines[index].color = lastLine.color;
+    storedLines[index].nodes = finalDots[0][2] + finalDots[1][2];
 
-    NODES_Storage[finalDots[0][2]]["LinesV2"].push(storedLines[storedLines.length-1].id);
-    NODES_Storage[finalDots[1][2]]["LinesV2"].push(storedLines[storedLines.length-1].id);
+    NODES_Storage[finalDots[0][2]]["Lines"].push(storedLines[index].id);
+    NODES_Storage[finalDots[1][2]]["Lines"].push(storedLines[index].id);
 
     console.log(NODES_Storage);
     console.log(storedLines);
@@ -333,9 +321,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
     defaultColorFields();
 
     // this is shitty workaround for a bad design, but it works
-    // it makes redrawStoredLines() fucntion
+    // it makes redrawStoredLines() object
     LinesHandler();
     LinesHandler(true);
+
+    document.getElementById("typeofAlgorithm").selectedIndex = 0;
+
+    // delete elements in the start
+    tasksMenu(false);
 });
 
 function updateDrawingPanel() {
@@ -345,14 +338,14 @@ function updateDrawingPanel() {
 	drawingWindow.style.left = (toolBarSize.offsetWidth + 30) + "px";
 	drawingWindow.style.width = $(window).width()-40-toolBarSize.offsetWidth + "px";
 	drawingWindow.style.top = ($(window).height()*0.01) + "px";
-	drawingWindow.style.height = ($(window).height()-$(window).height()*0.01-30) +"px";
+	drawingWindow.style.height = ($(window).height()-$(window).height()*0.01-30) + "px";
 	drawingWindow.style.position = "absolute";
 	drawingWindow.style["z-index"] = 0;
 
 	var drawingWindow2 = document.getElementById("paint");
 	drawingWindow2.style.position = "absolute";
 	drawingWindow2.style.width = drawingWindow.style.width;
-	drawingWindow2.style.height = ($(window).height()-($(window).height()*0.01)-30) +"px";
+	drawingWindow2.style.height = ($(window).height()-($(window).height()*0.01)-30) + "px";
 	drawingWindow2.style["z-index"] = 1;
 	drawingWindow2.style.position = "absolute";
 

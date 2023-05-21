@@ -95,17 +95,8 @@
 			      <input type="checkbox" checked>
 			      <i></i>
 			      <h2>Tasks</h2>
-			      <p id="algirith_place">
-					<!-- <button type="button" onclick="InDepth()" style=".button">In Depth</button>
-					<br>
-					<button type="button" onclick="inWidth()" style=".button">In Width</button>
-					<br>
-					<button type="button" onclick="UnmarkLines()" style=".button">Unmark Lines</button>
-					<br>
-					<button type="button" onclick="inWidth()" style=".button">In width</button>
-					<br> -->
-
-					What algirith you want:
+			      <p id="algorithm_place">
+					Choose algorithm:
 					<br>
 					<select name="typeofAlgorithm" id="typeofAlgorithm" onchange="uiAlgorithChange(document.getElementById('typeofAlgorithm'));">
 						<option value="none">None</option>
@@ -114,9 +105,18 @@
 					</select>
 
 					
-		            
-		         
 
+					<!-- Starting point:  -->
+					<br class="deletable">
+					<label for="TasksListCrown" class="deletable">Starting point:</label>
+					<select id="TasksListCrown" class="deletable" onchange="uiAlgorithChange(document.getElementById('typeofAlgorithm'));"></select>
+					<br class="deletable">
+					<button class="deletable" onclick="stepByStep('start');"><<</button>
+					<button class="deletable" onclick="stepByStep('left');"><</button>
+					<label id="pageCount" class="deletable">0/0</label>
+					<button class="deletable" onclick="stepByStep('right');">></button>
+					<button class="deletable" onclick="stepByStep('end');">>></button>
+					
 
 
 

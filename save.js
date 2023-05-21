@@ -24,13 +24,11 @@ function saveStateCookie() {
     }
     document.cookie += JSON.stringify(NODE_Names);
 
-
     //adding some setting
     var globalSettings = {
         "globalZInndex": globalZInndex
     };
     document.cookie += StringSeparator + JSON.stringify(globalSettings);
-    console.log(document.cookie);
 }
 
 // save button
@@ -222,9 +220,6 @@ async function loadState() {
         var paint = document.getElementById("paint");
         console.log(node);
         console.log(paint);
-
-        var x = 285;
-        var y = 109;
         
         node.style.left = (NODES_Storage[key].x-node2.x+20-7) + "px";
         node.style.top = (NODES_Storage[key].y-node2.y+170+9) + "px";

@@ -161,70 +161,28 @@ function updateTasksCrown() {
     }
 }
 
-function uiAlgorithChange(typeofAlgorithm) {
-    function createElements() {
-        var settings = [
-            {
-                text: "<<"
-            },
-            {
-                text: "<"
-            },
-            {
-                text: ">"
-            },
-            {
-                text: ">>"
-            }
-        ]
-        // this is requires to wipe everything with 1 command
-        var buff = document.createElement("div");
-        buff.id = "tasksStuff";
-        document.getElementById("algirith_place").appendChild(buff);
-        var parent = document.getElementById("tasksStuff");
+function updatePage(num1, num2) {
+    // updates counter for Tasks
+    document.getElementById("pageCount").innerHTML = num1 + "/" + num2;
+}
 
-        
-        var br = document.createElement("br");
-        parent.appendChild(br.cloneNode(true));
-        var select = document.createElement("select");
-        select.id = "TasksListCrown";
-
-        parent.appendChild(select);
-        updateTasksCrown();
-        parent.appendChild(br.cloneNode(true));
-
-        for (var i=0;i<settings.length;i++) {
-            var button = document.createElement("button");
-            button.innerHTML = settings[i].text;
-            button.onclick = function(e){
-                algoPressHandler(e.target);
-                return;
-            }
-            parent.appendChild(button);
-        }
-        var label = document.createElement("label");
-        label.type = "text";
-        label.innerHTML = "TESTf dgfdgfdgfdgfdgfdg";
-        label.style = ""
-        parent.appendChild(br.cloneNode(true));
-        parent.appendChild(label);
-        parent.appendChild(br.cloneNode(true));
-
-
-        // https://codepen.io/arseqpage/pen/wvzMvQb
-        // looks cool
+function tasksMenu(choice) {
+    var taskElems = document.getElementsByClassName("deletable");
+    if (choice == "exists") return ((taskElems[0].style.display=="none")?false:true);
+    for (var i=taskElems.length-1;i>-1;i--) {
+        taskElems[i].style.display = ((choice)?"":"none");
     }
+    if (choice) {
+        updateTasksCrown();
+    }
+}
+
+function uiAlgorithChange(typeofAlgorithm) {
     // frest start
     UnmarkLines();
 
-    if (typeofAlgorithm.value == "none") {
-        // delete everything
-        document.getElementById("tasksStuff").remove();
-        return;
-    }
-
-    if (document.getElementById("tasksStuff") == null) {
-        createElements();
+    if (!tasksMenu("exists")) {
+        tasksMenu(true);
     }
 
     switch (typeofAlgorithm.value) {
@@ -236,8 +194,8 @@ function uiAlgorithChange(typeofAlgorithm) {
             inWidth();
             break;
 
-        default:
-            console.log("error: " + typeofAlgorithm);
+        case "none":
+            tasksMenu(false);
             break;
     }
 }

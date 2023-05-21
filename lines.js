@@ -168,6 +168,10 @@ function LinesHandler(toTerminate) {
         var rect = e.target.getBoundingClientRect();
         var mouseX = parseInt(e.clientX - rect.left);
         var mouseY = parseInt(e.clientY - rect.top);
+
+        lineCtx.lineWidth = document.getElementById("lineWidth").value;
+        lineCtx.strokeStyle = document.getElementById("lineColor").value;
+        
         storedLines.push({
             x1: startX,
             y1: startY,
@@ -189,8 +193,7 @@ function LinesHandler(toTerminate) {
             storedLines[storedLines.length-1].letter["fillStyle"] = "#FFFFFF";
             storedLines[storedLines.length-1].letter["text"] = document.getElementById("lineCost").value;
         }
-        lineCtx.lineWidth = document.getElementById("lineWidth").value;
-        lineCtx.strokeStyle = document.getElementById("lineColor").value;
+        
         ConnectNodes();
         redrawStoredLines();
     }
@@ -240,3 +243,11 @@ function LinesHandler(toTerminate) {
     resizeScreen();
     redrawStoredLines();
 }
+function lineGetById(id) {
+    for (var i=0;i<storedLines.length;i++) {
+        if (storedLines[i].id == id) {
+            return storedLines[i];
+        }
+    }
+    return undefined;
+};

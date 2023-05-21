@@ -1,10 +1,44 @@
 // need to save state for algorithms
-var totalSteps = -1;
-var currentStep = -1;
-var actionsTodo = [];
 
-function isPossible() {
-    
+var currentStep = 0;
+var targetStep = 0;
+var actionsTodo = [-1];
+
+function stepByStep(value) {
+    switch (value) {
+        case "right":
+            targetStep = currentStep+1;
+            break;
+        case "left":
+            targetStep = currentStep-1;
+            break;
+        case "start":
+            targetStep = 0;
+            break;
+        case "end":
+            targetStep = actionsTodo.length-1;
+            break;
+    }
+    if (targetStep > actionsTodo.length-1) targetStep = actionsTodo.length-1;
+    else if (targetStep < 0) targetStep = 0;
+    updateColoring();
+    updatePage(currentStep, actionsTodo.length-1);
+}
+
+function updateColoring() {
+    if (targetStep > currentStep) {
+        for (var i=currentStep;i<=targetStep;i++) {
+            if (actionsTodo[i] == -1) continue;
+            lineGetById(actionsTodo[i]).marked = "green";
+        }
+    } else {
+        for (var i=currentStep;i>targetStep;i--) {
+            if (actionsTodo[i] == -1) continue;
+            lineGetById(actionsTodo[i]).marked = -1;
+        }
+    }
+    currentStep = targetStep;
+    redrawStoredLines();
 }
 
 function InDepth() {
@@ -19,35 +53,55 @@ function InDepth() {
         return;
     }
 
-    // clearning after last time
-    UnmarkLines();
     for (key in NODES_Storage) {
         NODES_Storage[key].isVisited = false;
     }
 
+    
+
     var results = [];
     var buff = "";
-    NODES_Storage["A"]["isVisited"] = true;
-    var main_node = ["A"];
+
+    var startingPoint = document.getElementById("TasksListCrown");
+    startingPoint = startingPoint.options[startingPoint.selectedIndex].value;
+
+    NODES_Storage[startingPoint]["isVisited"] = true;
+    var main_node = [startingPoint];
 
     var testedNodes = 0;
     var NodesFilled = 1;
     console.log(NODES_Storage)
+    console.log(storedLines)
     var failure = 0;
+
+    function decipher(lineID, currentNode) {
+        var targetNode = lineGetById(lineID).nodes;
+        if (targetNode[0] == nodeTail(main_node)) {
+            return targetNode[1];
+        } else {
+            return targetNode[0];
+        }
+    }
+
     while(true) {
         var i = 0;
         while (i<NODES_Storage[nodeTail(main_node)]["Lines"].length) {
-            var targetNode = NODES_Storage[nodeTail(main_node)]["Lines"][i];
+            var targetNode = decipher(NODES_Storage[nodeTail(main_node)]["Lines"][i], nodeTail(main_node));
+
+            // if we already visited this node, move to a new one
             if (NODES_Storage[targetNode]["isVisited"] == true) {
                 testedNodes += 1;
                 i += 1;
                 continue;
             }
+            // 
+            actionsTodo.push(NODES_Storage[nodeTail(main_node)]["Lines"][i]);
+
             NODES_Storage[targetNode]["isVisited"] = true;
             testedNodes = 0;
             NodesFilled += 1;
             buff += main_node[main_node.length-1] + " -> ";
-            buff += NODES_Storage[nodeTail(main_node)]["Lines"][i];
+            buff += targetNode;
             console.log(buff);
             buff = "";
 
@@ -55,14 +109,13 @@ function InDepth() {
             results.push(""+main_node[main_node.length-1]+targetNode);
             console.log("results");
             console.log(results);
-            main_node.push(NODES_Storage[main_node[main_node.length-1]]["Lines"][i]);
+            main_node.push(targetNode);
             console.log("found node:" + main_node);
         }
         console.log(nodeTail(main_node));
         if (testedNodes >= NODES_Storage[nodeTail(main_node)]["Lines"].length) {
             console.log("Hit the wall");
             console.log(main_node);
-            //results.push("" + main_node[main_node.length-2] + main_node[main_node.length-1]);
             main_node.pop(main_node.length-1);
             console.log(main_node);
             testedNodes = 0;
@@ -73,7 +126,6 @@ function InDepth() {
         if (Object.keys(NODES_Storage).length == NodesFilled || main_node.length == 0) {
             var j = 0;
             while (j<main_node.length) {
-                //results.push("" + main_node[main_node.length-2] + main_node[main_node.length-1]);
                 main_node.splice(main_node.length-1, 1);
                 j += 1;
             }
@@ -93,14 +145,18 @@ function InDepth() {
         //searching mathing
         for (var j=0;j<storedLines.length;j++) {
             if (storedLines[j].nodes == results[i] || reverseStr(storedLines[j].nodes) == results[i]) {
-                console.log("fuc");
-                storedLines[j].color = "green";
+                //storedLines[j].marked = "green";
             }  
         }
     }
     redrawStoredLines();
     console.log(results);
     console.log("The end");
+    console.log(actionsTodo);
+
+    currentStep = 0;
+    targetStep = 0;
+    updatePage(currentStep, actionsTodo.length-1);
 }
 
 function inWidth() {
@@ -190,13 +246,11 @@ function inWidth() {
     console.log("The end");
 }
 
-
-
-
 // remove all coloring done by Algorithms
 function UnmarkLines() {
     for (var i=0;i<storedLines.length;i++) {
         storedLines[i].marked = -1;
     }
     redrawStoredLines();
+    actionsTodo.splice(1);
 }
