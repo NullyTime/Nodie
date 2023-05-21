@@ -287,7 +287,6 @@ function ConnectNodes() {
     }
 
     var index = storedLines.length-1;
-
     storedLines[index].id = 0+Date.now();
     storedLines[index].x1 = finalDots[0][3];
     storedLines[index].y1 = finalDots[0][4];
@@ -299,8 +298,6 @@ function ConnectNodes() {
     NODES_Storage[finalDots[0][2]]["Lines"].push(storedLines[index].id);
     NODES_Storage[finalDots[1][2]]["Lines"].push(storedLines[index].id);
 
-    console.log(NODES_Storage);
-    console.log(storedLines);
     // updating lines in the end
     redrawStoredLines();
 }

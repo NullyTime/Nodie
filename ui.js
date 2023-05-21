@@ -27,8 +27,19 @@ function changeDraggable(change) {
 }
 
 function switchFunction() {
-	if (EDITOR_MODE == 1) nodeCreationMode(true);
-    else if (EDITOR_MODE == 2) changeDraggable("enable");
+    switch (EDITOR_MODE) {
+        case 1:
+            nodeCreationMode(true);
+            break;
+
+        case 2:
+            changeDraggable("enable");
+            break;
+
+        case 3:
+            deleteHandler(true);
+            break;
+    }
 }
 
 function NodeMode() {
@@ -38,7 +49,9 @@ function NodeMode() {
 		nodeCreationMode(true);
 		return;
 	}
+    // clear other functions
 	switchFunction();
+
 	returnButtonsBack();
 	EDITOR_MODE = 1;
 	var button = document.getElementById("button1");

@@ -85,9 +85,7 @@ function LinesHandler(toTerminate) {
         
     }
     $("#globalMouse").mousedown(function(e) {
-        console.log("sdf3");
         if (isInsideBox(e)) {
-            console.log("sdf");
             handleMouseDown(e);
         }
     });
