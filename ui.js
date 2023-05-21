@@ -4,6 +4,12 @@
 // 3 - deletion mode 
 var EDITOR_MODE = 0;
 
+function noDrag(change) {
+    for (key in NODES_Storage) {
+        var node = document.getElementById(key);
+        $(node).draggable(change);
+    }
+}
 
 function changeDraggable(change) {
     for (key in NODES_Storage) {
@@ -66,14 +72,20 @@ function DeleteMode() {
 	if (EDITOR_MODE == 3) {
 		EDITOR_MODE = 0;
 		returnButtonsBack();
+
+        deleteHandler(true);
+        noDrag("enable");
 		return;
 	}
     switchFunction();
 	returnButtonsBack();
+    noDrag("disable");
 	EDITOR_MODE = 3;
 	var button = document.getElementById("button3");
 	//button.style["border-style"] = "dotted";
 	button.style["background-color"] = "#1d2450";
+
+    deleteHandler(false);
 }
 
 
@@ -120,6 +132,117 @@ function noCostTooGreat() {
         button.value = "Pricy Mode";
     }
 }
+
+
+// handles button presses in Tasks
+function algoPressHandler(target) {
+    console.log(target)
+}
+
+// update list in Tasks when new node is created
+function updateTasksCrown() {
+    var select = document.getElementById("TasksListCrown");
+    var nodes = Object.keys(NODES_Storage);
+    if (select == null || nodes.length == 0) return;
+    nodes.sort();
+
+    // wipe old data
+    for (var i=0;i<select.length;i++) {
+        select.remove(i);
+        i--;
+    }
+
+    // push a new one
+    for (var i=0;i<nodes.length;i++) {
+        var opt = document.createElement("option");
+        opt.value = nodes[i];
+        opt.innerHTML = nodes[i];
+        select.appendChild(opt);
+    }
+}
+
+function uiAlgorithChange(typeofAlgorithm) {
+    function createElements() {
+        var settings = [
+            {
+                text: "<<"
+            },
+            {
+                text: "<"
+            },
+            {
+                text: ">"
+            },
+            {
+                text: ">>"
+            }
+        ]
+        // this is requires to wipe everything with 1 command
+        var buff = document.createElement("div");
+        buff.id = "tasksStuff";
+        document.getElementById("algirith_place").appendChild(buff);
+        var parent = document.getElementById("tasksStuff");
+
+        
+        var br = document.createElement("br");
+        parent.appendChild(br.cloneNode(true));
+        var select = document.createElement("select");
+        select.id = "TasksListCrown";
+
+        parent.appendChild(select);
+        updateTasksCrown();
+        parent.appendChild(br.cloneNode(true));
+
+        for (var i=0;i<settings.length;i++) {
+            var button = document.createElement("button");
+            button.innerHTML = settings[i].text;
+            button.onclick = function(e){
+                algoPressHandler(e.target);
+                return;
+            }
+            parent.appendChild(button);
+        }
+        var label = document.createElement("label");
+        label.type = "text";
+        label.innerHTML = "TESTf dgfdgfdgfdgfdgfdg";
+        label.style = ""
+        parent.appendChild(br.cloneNode(true));
+        parent.appendChild(label);
+        parent.appendChild(br.cloneNode(true));
+
+
+        // https://codepen.io/arseqpage/pen/wvzMvQb
+        // looks cool
+    }
+    // frest start
+    UnmarkLines();
+
+    if (typeofAlgorithm.value == "none") {
+        // delete everything
+        document.getElementById("tasksStuff").remove();
+        return;
+    }
+
+    if (document.getElementById("tasksStuff") == null) {
+        createElements();
+    }
+
+    switch (typeofAlgorithm.value) {
+        case "inDepth":
+            InDepth();
+            break;
+
+        case "inWidth":
+            inWidth();
+            break;
+
+        default:
+            console.log("error: " + typeofAlgorithm);
+            break;
+    }
+}
+
+
 
 // to set up colors on start
 function defaultColorFields() {

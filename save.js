@@ -140,8 +140,7 @@ function loadStateCookie() {
     }
 
     // deleting everything
-    removeNode("!ALL");
-    
+    removeNode("!ALL"); 
 
     var tempNODES_Storage = JSON.parse(decodedCookie[0]);
     // add nodes in the field
@@ -153,10 +152,6 @@ function loadStateCookie() {
     // add lines in the field
     storedLines = JSON.parse(decodedCookie[1]);
 
-    // this is shitty workaround for a bad design, but it works
-    // it makes redrawStoredLines() fucntion
-    LinesHandler();
-    LinesHandler(true)
     //
     redrawStoredLines();
 

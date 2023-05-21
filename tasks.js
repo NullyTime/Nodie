@@ -1,3 +1,12 @@
+// need to save state for algorithms
+var totalSteps = -1;
+var currentStep = -1;
+var actionsTodo = [];
+
+function isPossible() {
+    
+}
+
 function InDepth() {
     function nodeTail(main_node) {
         return (main_node[main_node.length-1]);
@@ -181,9 +190,13 @@ function inWidth() {
     console.log("The end");
 }
 
+
+
+
+// remove all coloring done by Algorithms
 function UnmarkLines() {
     for (var i=0;i<storedLines.length;i++) {
-        if (storedLines[i].color != defaultLineColor) storedLines[i].color = defaultLineColor;
+        storedLines[i].marked = -1;
     }
     redrawStoredLines();
 }

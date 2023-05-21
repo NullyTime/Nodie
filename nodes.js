@@ -1,18 +1,8 @@
-const defaultCircleOutlineColor = '#000000';
-
 // To make nodes on a different levels
 var globalZInndex = 19;
 
+// main storage for node information
 var NODES_Storage = {};
-
-
-
-
-
-
-
-
-
 
 
 function nodeCreationMode(toTerminate, preBuilt) {
@@ -30,7 +20,6 @@ function nodeCreationMode(toTerminate, preBuilt) {
 
     // create prebuilt node
     if (preBuilt != undefined) {
-        console.log("prebuilt");
         drawNode(undefined, true, preBuilt);
         return;
     } 
@@ -48,7 +37,7 @@ function nodeCreationMode(toTerminate, preBuilt) {
 		) {
 			drawNode(e, false);
 		} else {
-			removeNode("ghost");
+			removeNode({id: "ghost"});
 		}
 	});
 	$("#globalMouse").mousedown(function(e) {
@@ -136,19 +125,35 @@ function nodeCreationMode(toTerminate, preBuilt) {
 
 	    if (pernament) {
 	    	globalZInndex++;
-            console.log("df");
-            console.log(canvas);
+            //console.log("df");
+            //console.log(canvas);
             canvas.style.position = "absolute";
             //canvas.setAttribute("style.z-index", 2);
 	    	$(canvas).draggable({
 		        drag: function(event, ui) {
 		            updateLineOnDrag(event, ui);
+		            
+		            // later
+		            //borderRestriction(event, ui);
+		        },
+		        start: function(event, ui) {
+		        	// place for animations
+
+		        	//console.log(ui.helper[0].style)
+		        	//ui.helper[0].style
+		        	//ui.helper[0].s
+		        },
+		        stop: function(event, ui) {
+		        	// place for animations
+
+		        	//ui.helper[0].removeClass("draggedNode");
 		        }
 		    });
 		    NODES_Storage[nodeName] = {
 		    	"settings": {},
 		    	"isVisited": false,
-	            "Lines": connections.slice(0)
+	            "Lines": connections.slice(0),
+	            "LinesV2": []
 	        }
 	    	NODES_Storage[nodeName].settings = {
                 "circleSize": circleSize,
@@ -157,7 +162,7 @@ function nodeCreationMode(toTerminate, preBuilt) {
                 "borderColor": borderColor,
                 "fontSize": fontSize,
                 "fontColor": fontColor,
-                "zIndex": globalZInndex,
+                "zIndex": globalZInndex
 	        }
 
 	        canvas = document.createElement("canvas");
@@ -168,7 +173,11 @@ function nodeCreationMode(toTerminate, preBuilt) {
 	        node.style.top = (mouseY-20)+"px";
 	        node.style.position = "absolute";
             node.style.zIndex = globalZInndex;
+	        // remove letter from list
 	        LetterManager(1, nodeName);
+
+	        // update list in Tasks
+	        updateTasksCrown();
 	    } else {
 	    	var node = document.getElementById("ghost");
 	        node.style.left = (mouseX-20)+"px";
@@ -179,64 +188,55 @@ function nodeCreationMode(toTerminate, preBuilt) {
     }
 }
 
+function borderRestriction(event, ui) {
+	// console.log(event.target);
+	// var node = document.getElementById(event.target.id);
+	// var panel = document.getElementById("paint");
 
-// Spawn node in the field
-// function makeNode(save_state) {
-//     var canvas = document.createElement("canvas");
-//     var circleSize = document.getElementById("circleSize").value;
-//     canvas.height = circleSize;
-//     canvas.width = circleSize;
-//     canvas.style = "border: 1px black;border-radius: 50%;";
-//     var nodeLetter = document.getElementById("node_names");
+	// if (node.offsetLeft+NODES_Storage[event.target.id].settings.circleSize/2 ||
+	// 	)
 
-//     var ctx = canvas.getContext('2d');
-//     var X = circleSize/2;
-//     var Y = circleSize/2;
+	//console.log(ui);
+	//return;
+	var paint = document.getElementById("paint").getBoundingClientRect();
+	var rect = event.target.parentElement.getBoundingClientRect();
+    var nodeX = parseInt(event.clientX);
+    var nodeY = parseInt(event.clientY);
+    var circleSize = NODES_Storage[event.target.id].settings.circleSize/2;
 
-//     ctx.beginPath();
-//     ctx.arc(X, Y, circleSize / 2, 0, 2 * Math.PI, false);
-//     ctx.lineWidth = 2;
-//     ctx.strokeStyle = defaultCircleOutlineColor;
-//     ctx.stroke();
+	if (nodeX < paint.x+circleSize || nodeX > (paint.x+paint.width-circleSize)) {
+		setTimeout(function(){
+			var node = document.getElementById(event.target.id);
+			console.log(node);
+			node.style.left = "100px";
+			node.style.position = "absolute";
+	        node.style.zIndex = globalZInndex;
+		}, 3000);
+		console.log(event.target.style);
+		//event.target.style.left = +"px";
+		var node = document.getElementById(event.target.id);
+		console.log(node);
+		node.style.left = "100px";
+		node.style.position = "absolute";
+        node.style.zIndex = globalZInndex;
+	} else if (nodeY < paint.y+circleSize || nodeY > (paint.y+paint.height-circleSize)) {
+		//event.target.style.top = 1+"px";
+		var node = document.getElementById(event.target.id);
+		node.style.top = "1px";
+	}
+}
 
-//     ctx.fillStyle = defaultCircleFillColor;
-//     ctx.fill(); 
-
-//     // Add a letter
-//     ctx.font = (Math.round(circleSize / 3)+4) + "px serif";
-//     // TODO make a better letter placement
-//     ctx.fillStyle = "#000000"; 
-
-//     var letter = nodeLetter.options[nodeLetter.selectedIndex].value;
-//     if (save_state != undefined) {
-//         letter = save_state.name;
-//     }
-
-//     ctx.fillText(letter, (circleSize / 2)-5, (circleSize / 2)+4);
-//     canvas.setAttribute("id", letter);
-//     canvas.setAttribute("class", "classNode");
-//     // canvas.setAttribute("draggable", true);
-//     document.getElementById("myDiagramDiv").appendChild(canvas);
-//     $(canvas).draggable({
-//         drag: function(event, ui) {
-//             updateLineOnDrag(event, ui);
-//         }
-//     });
-//     $(canvas).draggable(true);
-
-
-//     if (save_state == undefined) {
-//         NODES_Storage[letter] = {
-//             "isVisited": false,
-//             "Lines": []
-//         }
-//     }
-
-//     LetterManager(1, letter);
-// }
-
-function removeNode(nodeID) {
-	if (nodeID == "!ALL") {
+function removeNode(node) {
+	// it's easier to delete ghost here and now
+	if (node.id == "ghost") {
+		var node = document.getElementById(node.id);
+		if (node != undefined) {
+			var parent = document.getElementById("myDiagramDiv");
+			parent.removeChild(node);
+		}
+		return;
+	}
+	if (node == "!ALL") {
 		var parent = document.getElementById("myDiagramDiv");
 		for (key in NODES_Storage) {
 			var placedNode = document.getElementById(key);
@@ -246,71 +246,23 @@ function removeNode(nodeID) {
 		return;
 	}
 
-	if (NODES_Storage[nodeID] != undefined) {
-
+	
+	// delete lines
+	for (var i=0;i<NODES_Storage[node.id].LinesV2.length;i++) {
+		removeLine(NODES_Storage[node.id].LinesV2[i]);
 	}
+	
 
-	var node = document.getElementById(nodeID);
+
+	var node = document.getElementById(node.id);
 	if (node != undefined) {
-		var parent = document.getElementById('myDiagramDiv');
+		var parent = document.getElementById("myDiagramDiv");
 		parent.removeChild(node);
 	}
+	LetterManager(2, node.id);
+
+	delete NODES_Storage[node.id];
 }
-
-// function nodeRemoval(switchMode, event) {
-//     if (switchMode && !NODE_DELETION_MODE) {
-//         NODE_DELETION_MODE = true;
-
-//         //make every node undraggable
-//         var test = [];
-//         for (key in NODES_Storage) {
-//             test.push(document.getElementById(key));
-//             $(test[test.length-1]).draggable("disable");
-//             $(test[test.length-1]).click(function (clicked_node) {
-//                 //console.log(clicked_node.target);
-//                 var placedNodes = document.getElementById('myDiagramDiv').getElementsByClassName('classNode ui-draggable ui-draggable-handle');
-//                 var NodesPosition = [];
-//                 console.log(placedNodes);
-
-//                 // saving positions
-//                 for (var i=0;i<placedNodes.length;i++) {
-//                     if (placedNodes[i].id == clicked_node.target.id) continue;
-//                     //var buff = document.getElementById(placedNodes[i].id);
-//                     //console.log(buff);
-//                     NodesPosition.push([placedNodes[i].id , placedNodes[i].offsetLeft, placedNodes[i].offsetTop]);
-//                 }
-//                // console.log(NodesPosition);
-//                 LetterManager(2, clicked_node.target.id);
-//                 var parent = document.getElementById('myDiagramDiv');
-//                 parent.removeChild(clicked_node.target);
-
-//                 // recovering old positions
-//                 for (var i=0;i<NodesPosition.length;i++) {
-//                 	var node = document.getElementById(NodesPosition[i][0]);
-// 			        node.style.left = NodesPosition[i][1] + "px";
-// 			        node.style.top = NodesPosition[i][2] + "px";
-// 			        node.style.position = "absolute";
-// 			    }
-// 			    console.log(document.getElementById('myDiagramDiv').getElementsByClassName('classNode ui-draggable ui-draggable-handle'));
-//             })
-//         }
-
-//         document.getElementById("makeNodders").disabled = true;
-//         return;
-//     } else if (switchMode && NODE_DELETION_MODE) {
-//         NODE_DELETION_MODE = false;
-
-//         //make every node undraggable
-//         for (key in NODES_Storage) {
-//             var node = document.getElementById(key);
-//             $(node).draggable("enable");
-//         }
-//         document.getElementById("makeNodders").disabled = false;
-//         return;
-//     }
-// }
-
-
 
 function ConnectNodes() {
     // Calculating whenever start and beginning are actually near nodes
@@ -331,7 +283,7 @@ function ConnectNodes() {
         
     }
 
-    console.log(matches);
+    //console.log(matches);
 
     var finalDots = [[0, 9999999],[1, 9999999]];
 
@@ -341,7 +293,7 @@ function ConnectNodes() {
         }
     }
 
-    console.log(finalDots)
+    //console.log(finalDots)
 
     // if one or two ends didn't found closest point
     if (finalDots[0][1] == 9999999 || finalDots[1][1] == 9999999 
@@ -349,7 +301,7 @@ function ConnectNodes() {
         return;
     }
 
-
+    storedLines[storedLines.length-1].id = 0+Date.now();
     storedLines[storedLines.length-1].x1 = finalDots[0][3];
     storedLines[storedLines.length-1].y1 = finalDots[0][4];
     storedLines[storedLines.length-1].x2 = finalDots[1][3];
@@ -361,6 +313,11 @@ function ConnectNodes() {
     NODES_Storage[finalDots[0][2]]["Lines"].push(finalDots[1][2]);
     NODES_Storage[finalDots[1][2]]["Lines"].push(finalDots[0][2]);
 
+    NODES_Storage[finalDots[0][2]]["LinesV2"].push(storedLines[storedLines.length-1].id);
+    NODES_Storage[finalDots[1][2]]["LinesV2"].push(storedLines[storedLines.length-1].id);
+
+    console.log(NODES_Storage);
+    console.log(storedLines);
     // updating lines in the end
     redrawStoredLines();
 }
@@ -374,6 +331,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
     updateDrawingPanel();
     setAutoFontValue();
     defaultColorFields();
+
+    // this is shitty workaround for a bad design, but it works
+    // it makes redrawStoredLines() fucntion
+    LinesHandler();
+    LinesHandler(true);
 });
 
 function updateDrawingPanel() {

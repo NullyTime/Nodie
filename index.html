@@ -14,6 +14,7 @@
       <script type="text/javascript" src="ui.js"></script>
       <script type="text/javascript" src="tasks.js"></script>
       <script type="text/javascript" src="save.js"></script>
+      <script type="text/javascript" src="delete.js"></script>
    </head>
    <body id="globalMouse">
       <div class="sidenav">
@@ -94,14 +95,34 @@
 			      <input type="checkbox" checked>
 			      <i></i>
 			      <h2>Tasks</h2>
-			      <p>
-					<button type="button" onclick="InDepth()" style=".button">In Depth</button>
+			      <p id="algirith_place">
+					<!-- <button type="button" onclick="InDepth()" style=".button">In Depth</button>
 					<br>
 					<button type="button" onclick="inWidth()" style=".button">In Width</button>
 					<br>
 					<button type="button" onclick="UnmarkLines()" style=".button">Unmark Lines</button>
 					<br>
 					<button type="button" onclick="inWidth()" style=".button">In width</button>
+					<br> -->
+
+					What algirith you want:
+					<br>
+					<select name="typeofAlgorithm" id="typeofAlgorithm" onchange="uiAlgorithChange(document.getElementById('typeofAlgorithm'));">
+						<option value="none">None</option>
+						<option value="inDepth">In Depth</option>
+						<option value="inWidth">In Width</option>
+					</select>
+
+					
+		            
+		         
+
+
+
+
+
+
+
 			      </p>
 			    </li>
 			    <li>
@@ -111,13 +132,13 @@
 			      <p>
 			      	Cookies
 			      	<br>
-			      	<button type="button" onclick="saveStateCookie()" style=".button">Save</button>
-			      	<button type="button" onclick="loadStateCookie()" style=".button">Load</button>
+			      	<button type="button" onclick="saveStateCookie()" style=".button">Save in File</button>
+			      	<button type="button" onclick="loadStateCookie()" style=".button">Load from File</button>
 			      	<br><br>
 			      	In File
 			      	<br>
-					<button type="button" onclick="saveState()" style=".button">Save</button>
-					<button type="button" onclick="loadState()" style=".button">Load</button>
+					<button id="save_btn" type="button" onclick="saveState()">Save in File</button>
+					<button id="load_btn" type="button" onclick="loadState()">Load from File</button>
 			      </p>
 			    </li>
 			  </ul>

@@ -1,5 +1,7 @@
 // Script to define default values
 
+const defaultCircleOutlineColor = '#000000';
+
 var TableofDefaults = {
 	// Nodes
 	"circleSize": "40",		// Circle Diameter

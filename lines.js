@@ -10,7 +10,8 @@ function updateLineOnDrag(event, ui) {
     //     return;
     // }
     //console.log(NODE_DELETION_MODE);
-    console.log(NODES_Storage[event.target.id]);
+    //console.log(NODES_Storage[event.target.id]);
+    if (NODES_Storage[event.target.id] == 0) return;
     if (NODES_Storage[event.target.id].Lines.length == 0) return;
 
     // TODO fix this
@@ -32,11 +33,19 @@ function updateLineOnDrag(event, ui) {
     }
 }
 
+function removeLine(lineID) {
+    for (var i=0;i<storedLines.length;i++) {
+        if (storedLines[i].id == lineID) {
+            storedLines.splice(i, 1);
+            redrawStoredLines();
+            return;
+        }
+    }
+}
 
 // Draws a line between two points
 var resizeScreen = function(){};
 function LinesHandler(toTerminate) {
-    console.log("fuck me")
     if (toTerminate) {
         $("#globalMouse").unbind("mousemove");
         $("#globalMouse").unbind("mousedown");
@@ -51,10 +60,6 @@ function LinesHandler(toTerminate) {
     var isDown;
     var startX;
     var startY;
-
-    // function coordinates() {
-    //     return ({x: 2, y:});
-    // }
 
     function isInsideBox(e) {
         var paint = document.getElementById("paint").getBoundingClientRect();
@@ -139,6 +144,7 @@ function LinesHandler(toTerminate) {
 
         // draw the current line
         lineCtx.lineWidth = document.getElementById("lineWidth").value;
+        lineCtx.strokeStyle = document.getElementById("lineColor").value;
         lineCtx.beginPath();
         lineCtx.moveTo(startX, startY);
         lineCtx.lineTo(mouseX, mouseY);
@@ -168,6 +174,7 @@ function LinesHandler(toTerminate) {
             x2: mouseX,
             y2: mouseY,
             color: lineCtx.strokeStyle,
+            marked: -1,
             letter: {
                 font: undefined,
                 fillStyle: undefined,
@@ -182,6 +189,8 @@ function LinesHandler(toTerminate) {
             storedLines[storedLines.length-1].letter["fillStyle"] = "#FFFFFF";
             storedLines[storedLines.length-1].letter["text"] = document.getElementById("lineCost").value;
         }
+        lineCtx.lineWidth = document.getElementById("lineWidth").value;
+        lineCtx.strokeStyle = document.getElementById("lineColor").value;
         ConnectNodes();
         redrawStoredLines();
     }
@@ -199,8 +208,13 @@ function LinesHandler(toTerminate) {
                 i--;
                 continue;
             }
-            // lines
-            lineCtx.strokeStyle = storedLines[i].color;
+
+            // if line is colored by Task, it overwrites main color
+            if (storedLines[i].marked != -1) {
+                lineCtx.strokeStyle = storedLines[i].marked;
+            } else {
+                lineCtx.strokeStyle = storedLines[i].color;
+            }
             lineCtx.lineWidth = storedLines[i].width;
             lineCtx.beginPath();
             lineCtx.moveTo(storedLines[i].x1, storedLines[i].y1);
