@@ -1,31 +1,368 @@
-body{
-  padding: 25px;
-}
 .title {
-	color: #5C6AC4;
-}
-#myDiagramDiv
-{
-    position:relative;    
+  color: #5C6AC4;
+  font-size: 40px;
+  text-align: center;
+  border: 1px solid;
+  border-radius: 10px;
 }
 
-#canvas
-{
-    background-color:blue; 
-    position:absolute;
-    z-index:1;
+#myDiagramDiv {
+  width: 20%; 
+  height: 20%;
 }
-#paint
-{
-    position:absolute;
-    top:0px;
-    left:0px;
-    z-index:0;
+
+#paint {
+  position: absolute;
+  z-index: 0;
 }
+
+.drawingPanel {
+  width: 95%; 
+  height: 95%;
+  background-color: #1e549f; 
+  border-radius: 15px;
+}
+.drawingPanel2 {
+  background-color: #ffffff; 
+  border-radius: 15px;
+  position: relative;
+}
+
+
+#canvas {
+  background-color: blue;
+  position: absolute;
+  z-index: 1;
+}
+
 body {
   background-color: #081f37;
   color: black;
 }
+
+
+.mainTools {
+  border-radius: 15px;
+  border: 1px solid;
+  border-color: #5C6AC4;
+}
+
+
+/* The sidebar menu */
+.sidenav {
+  height: 95%;
+  width: 250px;
+  position: fixed;
+  z-index: 1;
+  top: 1%;
+  left: 0.4%;
+  background-color: #081f37;
+  overflow-x: hidden; 
+}
+
+/* The navigation menu links */
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+/* Style page content */
+.main {
+  margin-left: 160px;
+  /* Same as the width of the sidebar */
+  padding: 0px 10px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+
+  .sidenav a {
+    font-size: 18px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.main_menu button {
+  background-color: #04AA6D; /* Green background */
+  border: 1px solid green; /* Green border */
+  color: white; /* White text */
+  padding: 5px; /* Some padding */
+  cursor: pointer; /* Pointer/hand icon */
+  float: left; /* Float the buttons side by side */
+
+}
+
+.main_menu button:not(:last-child) {
+  border-right: none; /* Prevent double borders */
+}
+
+/* Clear floats (clearfix hack) */
+.main_menu:after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* Add a background color on hover */
+.main_menu button:hover {
+  background-color: #3e8e41;
+}
+.main_menu button:onpress {
+  background-color: #ffffff;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+#faq {
+  max-width: 700px;
+  margin: auto;
+  padding: 0 15px;
+  text-align: center;
+}
+
+section.faq {
+  padding-top: 2em;
+  padding-bottom: 3em;
+}
+
+#faq ul {
+  text-align: left;
+}
+.transition, p, ul li i:before, ul li i:after {
+  transition: all 0.3s;
+}
+
+#faq .no-select, #faq h2 {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+#faq h1 {
+  color: #000;
+  margin-bottom: 30px;
+  margin-top: 0;
+}
+
+#faq h2 {
+  color: #5C6AC4;
+  font-size: 25px;
+  line-height: 34px;
+  text-align: left;
+  padding: 10px 10px 0;
+  text-transform: none;
+  font-weight: 300;
+  display: block;
+  margin: 0;
+  cursor: pointer;
+  transition: .2s;
+}
+
+#faq p {
+  color: #ffffff;
+  text-align: left;
+  font-family: 'hm_light', sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  position: relative;
+  overflow: hidden;
+  max-height: 250px;
+  will-change: max-height;
+  contain: layout;
+  display: inline-block;
+  opacity: 1;
+  transform: translate(0, 0);
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding: 0 50px 0 15px;
+  transition: .3s opacity, .6s max-height;
+  hyphens: auto;
+  z-index: 2;
+}
+
+#faq ul {
+  list-style: none;
+  perspective: 900;
+  padding: 0;
+  margin: 0;
+}
+#faq ul li {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  background: #081f37; /*Background color for whole button thing*/
+  box-shadow: 0 3px 10px -2px rgba(0,0,0,0.1);
+  border: 1px solid ;
+}
+#faq ul li + li {
+  margin-top: 8px;
+}
+#faq ul li:last-of-type {
+  padding-bottom: 0;
+}
+#faq ul li i {
+  position: absolute;
+  transform: translate(-6px, 0);
+  margin-top: 28px;
+  right: 15px;
+}
+#faq ul li i:before, ul li i:after {
+  content: "";
+  position: absolute;
+  background-color: #5C6AC4; /*arrow color*/
+  width: 3px;
+  height: 9px;
+}
+#faq ul li i:before {
+  transform: translate(-2px, 0) rotate(45deg);
+}
+#faq ul li i:after {
+  transform: translate(2px, 0) rotate(-45deg);
+}
+#faq ul li input[type=checkbox] {
+  position: absolute;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  opacity: 0;
+  touch-action: manipulation;
+}
+#faq ul li input[type=checkbox]:checked ~ h2 {
+  color: #818181; /*Outside word color*/
+}
+#faq ul li input[type=checkbox]:checked ~ p {
+  /*margin-top: 0;*/
+  max-height: 0;
+  transition: .3s;
+  opacity: 0;
+  /*transform: translate(0, 50%);*/
+}
+#faq ul li input[type=checkbox]:checked ~ i:before {
+  transform: translate(2px, 0) rotate(45deg);
+}
+#faq ul li input[type=checkbox]:checked ~ i:after {
+  transform: translate(-2px, 0) rotate(-45deg);
+}
+
+
+
+
+
+
+
+
+
+
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+a,
+a:visited,
+a:focus,
+a:active,
+a:link {
+  text-decoration: none;
+  outline: 0;
+}
+
+a {
+  color: currentColor;
+  transition: .2s ease-in-out;
+}
+
+h1, h2, h3, h4 {
+  margin: .3em 0;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+img {
+  vertical-align: middle;
+  height: auto;
+  width: 100%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

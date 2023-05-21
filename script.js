@@ -1,5 +1,6 @@
 /*
     TODO sl;dr
+    	- 
         - fix  node position during save/loading functionality
         - make letter more "in the middle"
         - save as text and load text
@@ -8,7 +9,6 @@
         - table with all nodes in there
         - ability to input data by a table
         - page-version of a console
-        - lines with numbers
         - window with credits
         - resizable paint window
         - do not allow nodes to go outside of a paint
@@ -16,7 +16,7 @@
         - more names for nodes
         - optimize code and delete useless outputs
         - delete line duplicates if it was intentionally connected >1 times
-        - make so u can presson the node while drawing a line
+        - make so u can press on the node while drawing a line
 */
 
 
@@ -40,7 +40,8 @@ var redrawStoredLines;
 
 // flag to delete nodes on the drag
 var NODE_DELETION_MODE = false;
-
+// flag to create nodes
+var NODE_CREATION_MODE = false;
 
 function InDepth() {
     function nodeTail(main_node) {
@@ -463,19 +464,11 @@ function loadStateCookie() {
             y: NODES_Storage[key].y
         });
 
-
-        // THIS CODE IS GARBAGE. FIX LATER
-        // TODO
         console.log("yikes");
         var node = document.getElementById(key);
-        var node2 = node.getBoundingClientRect();
-        var paint = document.getElementById("paint").getBoundingClientRect();
-
-        var x = 285;
-        var y = 109;
-
-        node.style.left = (NODES_Storage[key].x-node2.x-20+33) + "px";
-        node.style.top = (NODES_Storage[key].y-node2.y-20+220-14-13) + "px";
+        node.style.left = (NODES_Storage[key].x-20) + "px";
+        node.style.top = (NODES_Storage[key].y-20) + "px";
+        node.style.position = "absolute";
     }
 
     // add lines in the field
@@ -564,6 +557,91 @@ async function loadState() {
     LetterManager(3, JSON.parse(decodedCookie[2]));
 }
 
+
+
+
+function nodeCreationMode() {
+	if (!NODE_CREATION_MODE) {
+		NODE_CREATION_MODE = true;
+	} else {
+		NODE_CREATION_MODE = false;
+		// delete mousedown and shit
+		return;
+	}
+	var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+
+	// $("#paint").mousedown(function(e) {
+ //        circleMouseMove(e, true);
+ //    });
+ //    $("#paint").mousemove(function(e) {
+ //        circleMouseMove(e, false);    
+ //    });
+	$("#globalMouse").mousemove(function(e) {
+		//console.log(e)
+	    if (e.target.id == "paint" || e.target.id == "ghost") {
+	    	console.log(e.originalEvent.clientX);
+	    	//console.log(e.target.parentElement);
+	    	circleMouseMove(e, false);
+    	}   
+	});
+	$("#globalMouse").mousedown(function(e) {
+	    if (e.target.id == "paint" || e.target.id == "ghost") {
+	    	circleMouseMove(e, false);
+    	}   
+	});
+
+
+    function circleMouseMove(e, pernament) {
+        var rect = e.target.parentElement.getBoundingClientRect();
+        var mouseX = parseInt(e.clientX - rect.left);
+        var mouseY = parseInt(e.clientY - rect.top);
+
+        if (pernament) {
+        	drawNode(true);
+        } else {
+	        if (document.getElementById("ghost") == undefined) {
+	        	drawNode(false);
+	        }
+	    }
+        var node = document.getElementById("ghost");
+        node.style.left = (mouseX-20)+"px";
+        node.style.top = (mouseY-20)+"px";
+        node.style.position = "absolute";
+    }
+    function drawNode(pernament) {
+	    canvas.height = circleSize;
+	    canvas.width = circleSize;
+	    canvas.style = "border: 1px black;border-radius: 50%;opacity:" + ((pernament)?"100%":"40%");
+	    var nodeLetter = document.getElementById("node_names");
+
+	    var X = circleSize/2;
+	    var Y = circleSize/2;
+
+	    ctx.beginPath();
+	    ctx.arc(X, Y, circleSize / 2, 0, 2 * Math.PI, false);
+	    ctx.lineWidth = 2;
+	    ctx.strokeStyle = defaultCircleOutlineColor;
+	    ctx.stroke();
+
+	    ctx.fillStyle = defaultCircleFillColor;
+	    ctx.fill(); 
+
+	    // Add a letter
+	    ctx.font = (Math.round(circleSize / 3)+4) + "px serif";
+	    // TODO make a better letter placement
+	    ctx.fillStyle = "#000000"; 
+
+	    var letter = nodeLetter.options[nodeLetter.selectedIndex].value;
+
+	    ctx.fillText(letter, (circleSize / 2)-5, (circleSize / 2)+4);
+	    canvas.setAttribute("id", ((pernament)?letter:"ghost"));
+	    document.getElementById("myDiagramDiv").appendChild(canvas);
+
+    }
+}
+
+
 // Spawn node in the field
 function makeNode(save_state) {
     var canvas = document.createElement("canvas");
@@ -633,31 +711,31 @@ function nodeRemoval(switchMode, event) {
             test.push(document.getElementById(key));
             $(test[test.length-1]).draggable("disable");
             $(test[test.length-1]).click(function (clicked_node) {
-                console.log(clicked_node.target);
+                //console.log(clicked_node.target);
                 var placedNodes = document.getElementById('myDiagramDiv').getElementsByClassName('classNode ui-draggable ui-draggable-handle');
                 var NodesPosition = [];
-                //console.log(placedNodes);
+                console.log(placedNodes);
 
                 // saving positions
                 for (var i=0;i<placedNodes.length;i++) {
                     if (placedNodes[i].id == clicked_node.target.id) continue;
-                    console.log(placedNodes[i].getBoundingClientRect());
-                    var buff = placedNodes[i].getBoundingClientRect();
-                    NodesPosition.push([placedNodes[i].id , buff.x, buff.y]);
+                    //var buff = document.getElementById(placedNodes[i].id);
+                    //console.log(buff);
+                    NodesPosition.push([placedNodes[i].id , placedNodes[i].offsetLeft, placedNodes[i].offsetTop]);
                 }
-                console.log(NodesPosition);
+               // console.log(NodesPosition);
                 LetterManager(2, clicked_node.target.id);
                 var parent = document.getElementById('myDiagramDiv');
                 parent.removeChild(clicked_node.target);
 
                 // recovering old positions
                 for (var i=0;i<NodesPosition.length;i++) {
-                    var node = document.getElementById(NodesPosition[i][0]);
-                    console.log(node.style);
-                    node.style.left = NodesPosition[i][1];
-                    node.style.top = NodesPosition[i][2];
-                    console.log(node);
-                }
+                	var node = document.getElementById(NodesPosition[i][0]);
+			        node.style.left = NodesPosition[i][1] + "px";
+			        node.style.top = NodesPosition[i][2] + "px";
+			        node.style.position = "absolute";
+			    }
+			    console.log(document.getElementById('myDiagramDiv').getElementsByClassName('classNode ui-draggable ui-draggable-handle'));
             })
         }
 
@@ -857,9 +935,11 @@ function LinesHandler() {
 
     $("#paint").mousedown(function(e) {
         handleMouseDown(e);
+        console.log("m234ove");
     });
     $("#paint").mousemove(function(e) {
         handleMouseMove(e);
+        console.log("m234ov324e");
     });
     $("#paint").mouseup(function(e) {
         handleMouseUp(e);
@@ -874,7 +954,7 @@ function LinesHandler() {
     });
 
     function handleMouseDown(e) {
-        // ignore line when in special mode
+        // ignore line when in deletion mode
         if(NODE_DELETION_MODE) {
             return;
         }
@@ -888,7 +968,7 @@ function LinesHandler() {
     }
 
     function handleMouseMove(e) {
-        // ignore line when in special mode
+        // ignore line when in deletion mode
         if(NODE_DELETION_MODE) {
             return;
         }
@@ -918,7 +998,7 @@ function LinesHandler() {
     }
 
     function handleMouseUp(e) {
-        // ignore line when in special mode
+        // ignore line when in deletion mode
         if(NODE_DELETION_MODE) {
             return;
         }
@@ -987,6 +1067,11 @@ function LinesHandler() {
     }
 }
 
+function changeInputLength(inputPlace) {
+	var elem = document.getElementById(inputPlace);
+	elem.size = ((elem.value.length <= 10)?elem.value.length+2:elem.size);
+}
+
 function UnmarkLines() {
     for (var i=0;i<storedLines.length;i++) {
         if (storedLines[i].color != defaultLineColor) storedLines[i].color = defaultLineColor;
@@ -996,5 +1081,14 @@ function UnmarkLines() {
 
 document.addEventListener("DOMContentLoaded", function(event) {
     LetterManager(0, null);
-    LinesHandler();
+    //LinesHandler();
 });
+
+
+
+
+
+
+
+
+
