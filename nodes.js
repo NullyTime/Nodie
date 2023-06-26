@@ -1,3 +1,4 @@
+
 // To make nodes on a different levels
 var globalZInndex = 19;
 
@@ -125,23 +126,9 @@ function nodeCreationMode(toTerminate, preBuilt) {
 	    	globalZInndex++;
             canvas.style.position = "absolute";
 	    	$(canvas).draggable({
+	    		containment: "#paint",
 		        drag: function(event, ui) {
 		            updateLineOnDrag(event, ui);
-		            
-		            // later
-		            //borderRestriction(event, ui);
-		        },
-		        start: function(event, ui) {
-		        	// place for animations
-
-		        	//console.log(ui.helper[0].style)
-		        	//ui.helper[0].style
-		        	//ui.helper[0].s
-		        },
-		        stop: function(event, ui) {
-		        	// place for animations
-
-		        	//ui.helper[0].removeClass("draggedNode");
 		        }
 		    });
 		    NODES_Storage[nodeName] = {
@@ -182,44 +169,6 @@ function nodeCreationMode(toTerminate, preBuilt) {
     }
 }
 
-function borderRestriction(event, ui) {
-	// console.log(event.target);
-	// var node = document.getElementById(event.target.id);
-	// var panel = document.getElementById("paint");
-
-	// if (node.offsetLeft+NODES_Storage[event.target.id].settings.circleSize/2 ||
-	// 	)
-
-	//console.log(ui);
-	//return;
-	var paint = document.getElementById("paint").getBoundingClientRect();
-	var rect = event.target.parentElement.getBoundingClientRect();
-    var nodeX = parseInt(event.clientX);
-    var nodeY = parseInt(event.clientY);
-    var circleSize = NODES_Storage[event.target.id].settings.circleSize/2;
-
-	if (nodeX < paint.x+circleSize || nodeX > (paint.x+paint.width-circleSize)) {
-		setTimeout(function(){
-			var node = document.getElementById(event.target.id);
-			console.log(node);
-			node.style.left = "100px";
-			node.style.position = "absolute";
-	        node.style.zIndex = globalZInndex;
-		}, 3000);
-		console.log(event.target.style);
-		//event.target.style.left = +"px";
-		var node = document.getElementById(event.target.id);
-		console.log(node);
-		node.style.left = "100px";
-		node.style.position = "absolute";
-        node.style.zIndex = globalZInndex;
-	} else if (nodeY < paint.y+circleSize || nodeY > (paint.y+paint.height-circleSize)) {
-		//event.target.style.top = 1+"px";
-		var node = document.getElementById(event.target.id);
-		node.style.top = "1px";
-	}
-}
-
 function removeNode(node) {
 	// it's easier to delete ghost here and now
 	if (node.id == "ghost") {
@@ -252,6 +201,9 @@ function removeNode(node) {
 	}
 	LetterManager(2, node.id);
 	delete NODES_Storage[node.id];
+
+	// recalculate new paths
+    uiAlgorithmChange();
 }
 
 function ConnectNodes() {
@@ -300,11 +252,10 @@ function ConnectNodes() {
 
     // updating lines in the end
     redrawStoredLines();
+
+    // recalculate new paths
+    uiAlgorithmChange();
 }
-
-
-
-
 
 document.addEventListener("DOMContentLoaded", function(event) {
     LetterManager(0, null);
@@ -320,7 +271,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById("typeofAlgorithm").selectedIndex = 0;
 
     // delete elements in the start
-    tasksMenu(false);
+    tasksMenu("deletable", false);
+    tasksMenu("deletable2", false);
+    tasksMenu("deletable3", false);
 });
 
 function updateDrawingPanel() {

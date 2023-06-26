@@ -43,7 +43,7 @@ function deleteHandler(terminate) {
 				flag = true;
 				removeNode(e.target);
 				updateTasksCrown();
-				uiAlgorithChange();
+				uiAlgorithmChange();
 				break;
 			}
 		}

@@ -1,7 +1,7 @@
 const StringSeparator = "<--->";
 
 // save data in cookies
-function saveStateCookie() {
+function quickSaveState() {
     var tempNODES_Storage = JSON.parse(JSON.stringify(NODES_Storage));
 
     // adding location for each node
@@ -11,10 +11,10 @@ function saveStateCookie() {
         tempNODES_Storage[key].settings.y = node.offsetTop+20;
     }
 
-    document.cookie = JSON.stringify(tempNODES_Storage) + StringSeparator;
-    
+    var storage = "";
+    storage += JSON.stringify(tempNODES_Storage) + StringSeparator;
     // adding lines
-    document.cookie += JSON.stringify(storedLines) + StringSeparator;
+    storage += JSON.stringify(storedLines) + StringSeparator;
 
     // adding letters
     var select_letters = document.getElementById("node_names");
@@ -22,18 +22,21 @@ function saveStateCookie() {
     for (var i=0;i<select_letters.length;i++) {
         NODE_Names.push(select_letters[i].value);
     }
-    document.cookie += JSON.stringify(NODE_Names);
+    //document.cookie += JSON.stringify(NODE_Names);
+    storage += JSON.stringify(NODE_Names);
 
     //adding some setting
     var globalSettings = {
         "globalZInndex": globalZInndex
     };
-    document.cookie += StringSeparator + JSON.stringify(globalSettings);
+    storage += StringSeparator + JSON.stringify(globalSettings);
+    localStorage.setItem("save", storage);
+    console.log(localStorage.getItem("save"))
 }
 
 // load data from cookies
-function loadStateCookie() {
-    var decodedCookie = decodeURIComponent(document.cookie).split(StringSeparator);
+function quickLoadState() {
+    var decodedCookie = decodeURIComponent(localStorage.getItem("save")).split(StringSeparator);
     if (decodedCookie.length == 1) {
         console.log("No cookies");
         return;

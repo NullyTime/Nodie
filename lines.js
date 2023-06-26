@@ -62,7 +62,6 @@ function LinesHandler(toTerminate) {
         $("#globalMouse").unbind("mousemove");
         $("#globalMouse").unbind("mousedown");
         $("#globalMouse").unbind("mouseup");
-        $("#globalMouse").unbind("click");
         delete canvas;
         delete lineCtx;
         return;
@@ -79,10 +78,10 @@ function LinesHandler(toTerminate) {
         var mouseX = parseInt(e.clientX);
         var mouseY = parseInt(e.clientY);
         return (
-        (mouseX >= paint.x && mouseX <= paint.x+paint.width)
-        && 
-        (mouseY >= paint.y&& mouseY <= paint.y+paint.height))
-        
+            (mouseX >= paint.x && mouseX <= paint.x+paint.width)
+            && 
+            (mouseY >= paint.y && mouseY <= paint.y+paint.height)
+        )
     }
     $("#globalMouse").mousedown(function(e) {
         if (isInsideBox(e)) {
@@ -99,16 +98,6 @@ function LinesHandler(toTerminate) {
             handleMouseUp(e);
         }
     });
-    // $("#globalMouse").click(function(e) {
-    //     if (!isInsideBox(e)) {
-    //         return;
-    //     }
-    //     storedLines.length = 0;
-    //     for (key in NODES_Storage) {
-    //         NODES_Storage[key].Lines.length = 0;
-    //     }
-    //     redrawStoredLines();
-    // });
     window.addEventListener("resize", resizeScreen, true);
     resizeScreen = function () {
         var sketch = document.querySelector('#myDiagramDiv');
@@ -167,6 +156,28 @@ function LinesHandler(toTerminate) {
             var letter = document.getElementById("lineCost").value;
             lineCtx.fillText(letter, (startX+mouseX)/2-10, (startY+mouseY)/2-10);
         }
+        if (document.getElementById("vector").value == "Oriented") {
+            var headlen = 10;
+            var angle = Math.atan2(mouseY-startY,mouseX-startX);
+            lineCtx.beginPath();
+            lineCtx.moveTo(mouseX, mouseY);
+
+            lineCtx.lineTo(mouseX-headlen*Math.cos(angle-Math.PI/7),
+                       mouseY-headlen*Math.sin(angle-Math.PI/7));
+ 
+            //path from the side point of the arrow, to the other side point
+            lineCtx.lineTo(mouseX-headlen*Math.cos(angle+Math.PI/7),
+                       mouseY-headlen*Math.sin(angle+Math.PI/7));
+         
+            //path from the side point back to the tip of the arrow, and then
+            //again to the opposite side point
+            lineCtx.lineTo(mouseX, mouseY);
+            lineCtx.lineTo(mouseX-headlen*Math.cos(angle-Math.PI/7),
+                       mouseY-headlen*Math.sin(angle-Math.PI/7));
+         
+            //draws the paths created above
+            lineCtx.stroke();
+        }
     }
 
     function handleMouseUp(e) {
@@ -189,12 +200,14 @@ function LinesHandler(toTerminate) {
             y2: mouseY,
             color: lineCtx.strokeStyle,
             marked: -1,
+            markedLetter: -1,
             letter: {
                 font: undefined,
                 fillStyle: undefined,
                 text: undefined
             },
-            width: document.getElementById("lineWidth").value
+            width: document.getElementById("lineWidth").value,
+            isVector: ((document.getElementById("vector").value == "Oriented")?true:false)
         });
 
         // copy-paste is a bad practice. but
@@ -222,6 +235,11 @@ function LinesHandler(toTerminate) {
                 continue;
             }
 
+            var fromX = storedLines[i].x1;
+            var fromY = storedLines[i].y1;
+            var toX = storedLines[i].x2;
+            var toY = storedLines[i].y2;
+
             // if line is colored by Task, it overwrites main color
             if (storedLines[i].marked != -1) {
                 lineCtx.strokeStyle = storedLines[i].marked;
@@ -230,23 +248,53 @@ function LinesHandler(toTerminate) {
             }
             lineCtx.lineWidth = storedLines[i].width;
             lineCtx.beginPath();
-            lineCtx.moveTo(storedLines[i].x1, storedLines[i].y1);
-            lineCtx.lineTo(storedLines[i].x2, storedLines[i].y2);
+            lineCtx.moveTo(fromX, fromY);
+            lineCtx.lineTo(toX, toY);
             lineCtx.stroke();
 
-            // letters
-            var x = (storedLines[i].x1+storedLines[i].x2)/2-10;
-            var y;
-            if (storedLines[i].y1>storedLines[i].y2) {
-                var y = (storedLines[i].y1+storedLines[i].y2)/2-10;
-            } else {
-                var y = (storedLines[i].y1+storedLines[i].y2)/2+20;
+            if (storedLines[i].letter.text != undefined) {
+                // letters
+                var x = (storedLines[i].x1+storedLines[i].x2)/2-10;
+                var y;
+                if (storedLines[i].y1>storedLines[i].y2) {
+                    var y = (storedLines[i].y1+storedLines[i].y2)/2-10;
+                } else {
+                    var y = (storedLines[i].y1+storedLines[i].y2)/2+20;
+                }
+
+                if (storedLines[i].markedLetter == -1) {
+                    lineCtx.font = storedLines[i].letter.font;
+                    lineCtx.fillStyle = storedLines[i].letter.fillStyle; 
+                    lineCtx.fillText(storedLines[i].letter.text, x, y);
+                } else {
+                    lineCtx.font = storedLines[i].letter.font;
+                    lineCtx.fillStyle = storedLines[i].letter.fillStyle; 
+                    lineCtx.fillText(storedLines[i].markedLetter, x, y);
+                }
             }
 
-            if (storedLines[i].letter.text != undefined) {
-                lineCtx.font = storedLines[i].letter.font;
-                lineCtx.fillStyle = storedLines[i].letter.fillStyle; 
-                lineCtx.fillText(storedLines[i].letter.text, x, y);
+            // Draw tip of the arrow
+            if (storedLines[i].isVector) {
+                var headlen = 10;
+                var angle = Math.atan2(toY-startY,toX-fromX);
+                lineCtx.beginPath();
+                lineCtx.moveTo(toX, toY);
+
+                lineCtx.lineTo(toX-headlen*Math.cos(angle-Math.PI/7),
+                           toY-headlen*Math.sin(angle-Math.PI/7));
+
+                //path from the side point of the arrow, to the other side point
+                lineCtx.lineTo(toX-headlen*Math.cos(angle+Math.PI/7),
+                           toY-headlen*Math.sin(angle+Math.PI/7));
+             
+                //path from the side point back to the tip of the arrow, and then
+                //again to the opposite side point
+                lineCtx.lineTo(toX, toY);
+                lineCtx.lineTo(toX-headlen*Math.cos(angle-Math.PI/7),
+                           toY-headlen*Math.sin(angle-Math.PI/7));
+             
+                //draws the paths created above
+                lineCtx.stroke();
             }
         }
     }

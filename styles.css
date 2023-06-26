@@ -206,7 +206,7 @@ section.faq {
   transform: translate(0, 0);
   margin-top: 5px;
   margin-bottom: 5px;
-  padding: 0 50px 0 15px;
+  padding: 0 30px 0 15px;
   transition: .3s opacity, .6s max-height;
   hyphens: auto;
   z-index: 2;
@@ -374,7 +374,7 @@ ul {
 #node_names {
   display: inline-block;
   width: 45px;
-  height: 34px;
+  height: 25px;
   line-height: 30px;
   position: relative;
   background-color: #5c6ac4;
@@ -458,9 +458,48 @@ ul {
 
 
 
+/*vector button*/
+#vector {
+  width: 40px;
+  height: 20px;
+  border-radius: 15px;
+  border: 1px solid;
+  border-color: #5C6AC4;
+ /* word-wrap: break-word;*/
+  background-color: #1d2450;
+  color: #ffffff;
+  padding-top: 20px;
+}
+
+/* Add a background color on hover */
+#vector:hover {
+  background-color: #9da6dc;
+}
 
 
 
 
+
+/*Tasks output box*/
+#TaskOutput {
+  border-radius: 5px;
+  background-color: #5c6ac4;
+  border: 1px;
+  border-color: #000000;
+  /*padding: 10px 50px 30px 0;*/
+
+  max-width: 194px;
+  min-width: 194px;
+
+  max-height: 200px;
+  min-height: 100px;
+
+  margin: 0 auto;
+  padding: 4px;
+  color: #ffffff;
+}
+#TaskOutput:focus {
+    outline: none;
+}
 
 

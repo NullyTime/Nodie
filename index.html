@@ -4,12 +4,10 @@
       <meta charset="UTF-8">
       <title>NODIE</title>
       <link rel="stylesheet" href="styles.css" />
+      <script type="text/javascript" src="nodes.js"></script>
       <script type="text/javascript" src="./libs/jquery-3.6.4.min.js"></script>
       <script type="text/javascript" src="./libs/jquery-ui.min.js"></script>
-      <script src="./libs/FileSaver.js"></script>
-
       <script type="text/javascript" src="defaults.js"></script>
-      <script type="text/javascript" src="nodes.js"></script>
       <script type="text/javascript" src="lines.js"></script> 
       <script type="text/javascript" src="ui.js"></script>
       <script type="text/javascript" src="tasks.js"></script>
@@ -40,25 +38,25 @@
 			      	<select name="node_names" id="node_names"></select>
 			      	<br>
 			      	Diameter:
-			      	<input id="circleSize" type="number" size="3" min="10" value=40 oninput="changeInputLength('circleSize')">
-			      	<input type="button" id="defaultButton" value="Default" onclick="setDefaultValue('circleSize');">
+			      	<input id="circleSize" type="number" size="3" min="10" max="200" value=40 oninput="changeInputLength('circleSize')">
+			      	<input type="button" id="defaultButton" value="Reset" onclick="setDefaultValue('circleSize');">
 			      	
 			      	<br>
 
 			      	Border Size:
 			      	<input id="borderSize" type="number" size="3" min="1" max="20" value=1 oninput="changeInputLength('borderSize')">
-			      	<input type="button" id="defaultButton" value="Default" onclick="setDefaultValue('borderSize');">
+			      	<input type="button" id="defaultButton" value="Reset" onclick="setDefaultValue('borderSize');">
 			      	
 			      	<br>
 
 			      	Font Size:
-			      	<input id="fontSize" type="number" size="3" min="1" max="20" value=2 oninput="changeInputLength('fontSize')">
-			      	<input type="button" id="defaultButton" value="Default" onclick="setDefaultValue('fontSize');">
+			      	<input id="fontSize" type="number" size="3" min="1" max="100" value=2 oninput="changeInputLength('fontSize')">
+			      	<input type="button" id="defaultButton" value="Reset" onclick="setDefaultValue('fontSize');">
 			      	<br>
 			      	<br>
 			      	<input type="button" id="autoFont" value="Auto Font Size Mode" onclick="autoFontGenerator();"> 
 			      	<br>
-			      	<input type="button" id="customNameButton" value="Custom Name" onclick=""> 
+			      	<!-- <input type="button" id="customNameButton" value="Custom Name" onclick="">  -->
 			      	<br>
 			      	<br>
 			      	Node Color:
@@ -86,6 +84,9 @@
 		            Color
 		            <input type="color" id="lineColor" value="#f6b73c" onchange="resizeScreen();">
 		            <br>
+		            Directions:
+		            <button id="vector" onclick="vectorLine();" value="Unoriented"></button> 
+		            <br>
 		            <button id="clear">Remove All Lines</button>
 		            <br>
 		            <input type="button" id="lineCostButton" value="No Cost Mode" onclick="noCostTooGreat();">
@@ -98,15 +99,28 @@
 			      <p id="algorithm_place">
 					Choose algorithm:
 					<br>
-					<select name="typeofAlgorithm" id="typeofAlgorithm" onchange="uiAlgorithChange(document.getElementById('typeofAlgorithm'));">
+					<select name="typeofAlgorithm" id="typeofAlgorithm" onchange="uiAlgorithmChange();">
 						<option value="none">None</option>
 						<option value="inDepth">In Depth</option>
 						<option value="inWidth">In Width</option>
+						<option value="kruskal">Kruskal</option>
+						<option value="prima">Prima</option>
+						<option value="dijkstra">Dijkstra</option>
+						<option value="ford">Ford</option>
 					</select>
 
-					<br class="deletable">
-					<label for="TasksListCrown" class="deletable">Starting point:</label>
-					<select id="TasksListCrown" class="deletable" onchange="uiAlgorithChange();"></select>
+					<br class="deletable2">
+					<br class="deletable2">
+					<label for="TasksLineColor" class="deletable2">Line color</label>
+					<br class="deletable2">
+					<input type="color" class="deletable2" id="TasksLineColor" value="#ff0000" onchange="doTheAction();">
+					<br class="deletable2">
+					<label for="TasksListCrown" class="deletable2">Starting point:</label>
+					<select id="TasksListCrown" class="deletable2" onchange="uiAlgorithmChange();"></select>
+					<br class="deletable3">
+					<label for="TasksListCrownEnd" class="deletable3">Ending point:</label>
+					<select id="TasksListCrownEnd" class="deletable3" onchange="uiAlgorithmChange();"></select>
+
 					<br class="deletable">
 					<button class="deletable" onclick="stepByStep('start');"><<</button>
 					<button class="deletable" onclick="stepByStep('left');"><</button>
@@ -114,6 +128,12 @@
 					<button class="deletable" onclick="stepByStep('right');">></button>
 					<button class="deletable" onclick="stepByStep('end');">>></button>
 					
+
+					<br>
+					<br>
+					<textarea id="TaskOutput" class="deletable" readonly> value="2ert 3465yrtghrth rt6hyt6hrt 43fsdgvbedgbgb se rewrf ewrfwe g regw regreg erg re gregreg rrgregrv4" readonly</textarea>
+					<br class="deletable">
+					<br class="deletable">
 			      </p>
 			    </li>
 			    <li>
@@ -121,10 +141,10 @@
 			      <i></i>
 			      <h2>Save</h2>
 			      <p>
-			      	Cookies
+			      	Quick save
 			      	<br>
-			      	<button type="button" onclick="saveStateCookie()" style=".button">Save in File</button>
-			      	<button type="button" onclick="loadStateCookie()" style=".button">Load from File</button>
+			      	<button type="button" onclick="quickSaveState()" style=".button">Quick Save</button>
+			      	<button type="button" onclick="quickLoadState()" style=".button">Quick Load</button>
 			      	<br><br>
 			      	In File
 			      	<br>

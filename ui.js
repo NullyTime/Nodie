@@ -12,10 +12,7 @@ function noDrag(change) {
 }
 
 function changeDraggable(change) {
-    for (key in NODES_Storage) {
-        var node = document.getElementById(key);
-        $(node).draggable(change);
-    }
+    noDrag(change);
 
     // make paint panel the closest to viewer
     var zIndex = parseInt(document.getElementById("paint")["style"]["z-index"]);
@@ -34,6 +31,7 @@ function switchFunction() {
 
         case 2:
             changeDraggable("enable");
+            LinesHandler(true);
             break;
 
         case 3:
@@ -97,7 +95,6 @@ function DeleteMode() {
 	var button = document.getElementById("button3");
 	//button.style["border-style"] = "dotted";
 	button.style["background-color"] = "#1d2450";
-
     deleteHandler(false);
 }
 
@@ -131,7 +128,6 @@ function autoFontGenerator() {
         button.style["background-color"] = "#9da6dc";
         setAutoFontValue();
     }
-
 }
 
 // No Cost Mode button handler
@@ -146,10 +142,16 @@ function noCostTooGreat() {
     }
 }
 
-
-// handles button presses in Tasks
-function algoPressHandler(target) {
-    console.log(target)
+// Vector button handler
+function vectorLine() {
+    var button = document.getElementById("vector");
+    if (button.value == "Unoriented") {
+        button.value = "Oriented";
+        button.style["background-color"] = "#ff76e1e6";
+    } else {
+        button.value = "Unoriented";
+        button.style["background-color"] = "#1d2450";
+    }
 }
 
 // update list in Tasks when new node is created
@@ -159,9 +161,14 @@ function updateTasksCrown() {
     if (select == null || nodes.length == 0) return;
     nodes.sort();
 
+    var select2 = document.getElementById("TasksListCrownEnd");
+
+    var previous1 = ((select.options[select.selectedIndex] != undefined)?select.options[select.selectedIndex].value:null);
+    var previous2 = ((select2.options[select2.selectedIndex] != undefined)?select2.options[select2.selectedIndex].value:null);
     // wipe old data
     for (var i=0;i<select.length;i++) {
         select.remove(i);
+        select2.remove(i);
         i--;
     }
 
@@ -171,6 +178,15 @@ function updateTasksCrown() {
         opt.value = nodes[i];
         opt.innerHTML = nodes[i];
         select.appendChild(opt);
+        select2.appendChild(opt.cloneNode(true));
+    }
+
+    // recovering values
+    if (previous1 != null) {
+        select.value = previous1;
+    }
+    if (previous2 != null) {
+        select2.value = previous2;
     }
 }
 
@@ -179,37 +195,59 @@ function updatePage(num1, num2) {
     document.getElementById("pageCount").innerHTML = num1 + "/" + num2;
 }
 
-function tasksMenu(choice) {
-    var taskElems = document.getElementsByClassName("deletable");
-    if (choice == "exists") return ((taskElems[0].style.display=="none")?false:true);
+function tasksMenu(element, param) {
+    var taskElems = document.getElementsByClassName(element);
     for (var i=taskElems.length-1;i>-1;i--) {
-        taskElems[i].style.display = ((choice)?"":"none");
+        taskElems[i].style.display = ((param)?"":"none");
     }
-    if (choice) {
-        updateTasksCrown();
-    }
+    
+    updateTasksCrown();
 }
 
-function uiAlgorithChange() {
+function uiAlgorithmChange() {
     var typeofAlgorithm = document.getElementById("typeofAlgorithm");
     // frest start
     UnmarkLines();
+    actionsTodo.splice(1);
 
-    if (!tasksMenu("exists")) {
-        tasksMenu(true);
-    }
+    tasksMenu("deletable", true);
 
     switch (typeofAlgorithm.value) {
         case "inDepth":
+            tasksMenu("deletable2", true);
             InDepth();
             break;
 
         case "inWidth":
+            tasksMenu("deletable2", true);
             inWidth();
             break;
 
+        case "kruskal":
+            tasksMenu("deletable2", false);
+            Kruskal();
+            break;
+
+        case "prima":
+            tasksMenu("deletable2", true);
+            Prima();
+            break;
+
+        case "dijkstra":
+            tasksMenu("deletable2", true);
+            Dijkstra();
+            break;
+
+        case "ford":
+            tasksMenu("deletable2", true);
+            tasksMenu("deletable3", true);
+            Ford();
+            break;
+
         case "none":
-            tasksMenu(false);
+            tasksMenu("deletable", false);
+            tasksMenu("deletable2", false);
+            tasksMenu("deletable3", false);
             break;
     }
 }
